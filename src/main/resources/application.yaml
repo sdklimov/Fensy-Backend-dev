@@ -1,0 +1,22 @@
+application:
+  datasource:
+    url: r2dbc:pool:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:local_db}${DB_CONN_PROP:?initialSize=10&maxSize=10&acquireRetry=10&maxCreateConnectionTime=PT2S&maxAcquireTime=PT2.5S&maxIdleTime=PT180S&poolName=db-pool-portal}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    migration:
+      url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:local_db}
+
+spring:
+  application:
+    name: fensy
+  main:
+    banner-mode: off
+  r2dbc:
+    url: ${application.datasource.url}
+    username: ${application.datasource.username}
+    password: ${application.datasource.password}
+  liquibase:
+    enabled: true
+    url: ${application.datasource.migration.url}
+    user: ${application.datasource.username}
+    password: ${application.datasource.password}

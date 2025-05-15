@@ -1,0 +1,3 @@
+databaseChangeLog:
+  # release_1_0_0
+  - include: { relativeToChangelogFile: true, file: release_1_0_0/changelog.yaml }

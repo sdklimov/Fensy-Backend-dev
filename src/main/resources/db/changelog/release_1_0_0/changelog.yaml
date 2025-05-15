@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - include: { relativeToChangelogFile: true, file: create-pgroonga-extension.sql }
+  - include: { relativeToChangelogFile: true, file: create-countries-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-languages-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-user-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-user-settings-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-interests-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-user-interests-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-interest-translations-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-post-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-post-interests-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-tags-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-post-tags-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-parsed-links-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-parsed-link-interests-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-collections-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-collection-interests-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-collection-posts-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-collection-covers-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-post-collections-covers-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-post-attachments-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-post-views-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-comments-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-comment-likes-table.sql }

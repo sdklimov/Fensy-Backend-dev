@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  postgres:
+    image: groonga/pgroonga:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: local_db
+      POSTGRES_PASSWORD: postgres
