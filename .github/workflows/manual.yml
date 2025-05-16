@@ -58,4 +58,3 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
           script: bash /root/deploy-fsy-appdeploy.sh
-
