@@ -32,7 +32,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: evgenijbogdanov/fensy:latest
           labels: ${{ steps.meta.outputs.labels }}
   
   
