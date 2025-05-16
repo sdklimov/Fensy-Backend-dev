@@ -59,3 +59,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script_stop: true
           script: bash /root/deploy-fsy-appdeploy.sh
+
