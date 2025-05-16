@@ -1,0 +1,104 @@
+enum PostAllowViewingFor {
+    any
+    followers
+    none
+    donors
+}
+
+type PostAttachment {
+    id: ID!
+    filePath: String!
+    fullFilePath: String!
+}
+
+type Post {
+    id: ID!
+    authorId: ID!
+    author: User!
+    title: String
+    content: String
+    allowViewingFor: PostAllowViewingFor!
+    pinned: Boolean!
+    adultContent: Boolean!
+    originalPostId: ID
+    isRepost: Boolean!
+    countViews: Int!
+    reposts: [Post]!
+    originalPost: Post
+    collections: [Collection]!
+    attachedCollections: [Collection]!
+    attachments: [PostAttachment]!
+    tags: [Tag]!
+    parsedLinks: [ParsedLink]!
+    interests: [Interest]!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type PostResponse {
+    success: Boolean!
+    message: String!
+    post: Post
+}
+
+type PostsResponse {
+    success: Boolean!
+    message: String!
+    posts: [Post]
+}
+
+input CreatedParsedLink {
+    type: ParsedLinkType!
+    link: String!
+    picture: String
+    title: String!
+    description: String
+    price: Float
+    currency: String!
+    interestIds: [ID!]!
+}
+
+input CreatedPost {
+    title: String!
+    content: String!
+    allowViewingFor: PostAllowViewingFor!
+    pinned: Boolean
+    tags: [String]
+    attachments: [Upload]
+    parsedLinks: [CreatedParsedLink]
+    interestIds: [ID!]!
+    collectionIds: [ID]
+}
+
+input CreatedRepost {
+    originalPostId: ID!
+    title: String
+    content: String
+    allowViewingFor: PostAllowViewingFor!
+    pinned: Boolean
+    tags: [String]
+    attachments: [Upload]
+    parsedLinks: [CreatedParsedLink]
+    interestIds: [ID]
+    collectionIds: [ID]
+}
+
+extend type Query {
+    """ Получить пост пользователя """
+    getPost(postId: String): PostResponse!
+    """ Получить все посты пользователя """
+    getAllUserPosts(username: String): PostsResponse!
+}
+
+extend type Mutation {
+    """ Создать репост (необходима авторизация) """
+    createRepost(input: CreatedRepost!): PostResponse!
+    """ Создать пост (необходима авторизация) """
+    createPost(input: CreatedPost!): PostResponse!
+    """ Обновить пост (необходима авторизация) """
+    updatePost(input: CreatedPost!): PostResponse!
+    """ Удалить пост (необходима авторизация) """
+    deletePost(postId: ID!): PostResponse!
+    """ Добавить посту просмотр от пользователя """
+    addPostView(postId: ID!): PostResponse!
+}

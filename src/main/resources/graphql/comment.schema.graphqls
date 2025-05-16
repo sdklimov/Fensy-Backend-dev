@@ -1,0 +1,40 @@
+type Comment {
+    id: ID!
+    content: String
+    attachments: [CommentAttachment]!
+    countLikes: Int!
+    authorId: ID!
+    author: User!
+    postId: ID!
+    post: Post!
+    parentId: ID
+    parent: Comment
+}
+
+type CommentAttachment {
+    id: ID!
+    commmentId: ID!
+    filePath: String!
+}
+
+type CommentResponse {
+    success: Boolean!
+    message: String!
+    comment: Comment
+}
+
+input CreatedComment {
+    content: String
+    attachments: [Upload]
+    postId: ID!
+    parentId: ID
+}
+
+extend type Mutation {
+    """ Создать комментарий (необходима авторизация) """
+    createComment(input: CreatedComment!): CommentResponse!
+    """ Удалить комментарий (необходима авторизация) """
+    deleteComment(commentId: ID!): CommentResponse!
+    """ Добавить лайк от пользователя (необходима авторизация) """
+    toggleCommentLike(commentId: ID!): CommentResponse!
+}

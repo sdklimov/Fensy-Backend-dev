@@ -1,0 +1,15 @@
+enum AllowMessagesFrom {
+    any
+    followers
+    none
+}
+
+type UserSettings {
+    id: ID!
+    userId: ID!
+    allowMessagesFrom: AllowMessagesFrom!
+    notificationsOnEmail: Boolean!
+    adOnEmail: Boolean!
+    createdAt: String!
+    updatedAt: String!
+}

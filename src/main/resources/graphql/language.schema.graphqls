@@ -1,0 +1,16 @@
+type Language {
+    id: ID!
+    code: String!
+    name: String!
+}
+
+type LanguageResponse {
+    success: Boolean!
+    message: String!
+    languages: [Language]
+}
+
+extend type Query {
+    """ Получить все существующие языки """
+    getAllLanguages: LanguageResponse!
+}

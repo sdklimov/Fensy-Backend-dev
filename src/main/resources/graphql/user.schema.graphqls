@@ -1,0 +1,76 @@
+enum UserRole {
+    user
+    pro
+}
+
+type User {
+    id: ID!
+    verified: Boolean!
+    fullName: String
+    username: String!
+    email: String
+    avatar: String
+    bio: String
+    location: String
+    role: UserRole!
+    website: String
+    countryId: ID!
+    country: Country!
+    languageId: ID!
+    language: Language!
+    interests: [Interest]!
+    collections: [Collection]!
+    posts: [Post]!
+    telegramId: String
+    tonWalletId: String
+    yandexId: String
+    vkId: String
+    isActive: Boolean!
+    lastLoginAt: String!
+    settings: UserSettings!
+    createdAt: String!
+    updatedAt: String!
+}
+
+type UserResponse {
+    success: Boolean!
+    message: String!
+    user: User
+}
+
+input UserProfile {
+    fullName: String
+    username: String
+    email: String
+    avatar: Upload
+    bio: String
+    location: String
+    website: String
+    countryId: ID
+    languageId: ID
+}
+
+input UpdateUserSettingsInput {
+    allowMessagesFrom: AllowMessagesFrom
+    notificationsOnEmail: Boolean
+    adOnEmail: Boolean
+}
+
+extend type Query {
+    """
+    Получить пользователя по его username.
+    Если не передавать username, то вернётся текущий авторизованный пользователь (необходима авторизация)
+    """
+    getUser(username: String): UserResponse!
+}
+
+extend type Mutation {
+    """ Обновить профиль пользователя (необходима авторизация) """
+    updateUserProfile(userProfile: UserProfile!): UserResponse!
+    """ Добавить интересы к пользователю (необходима авторизация) """
+    setInterestsToUser(interestIds: [ID!]!): UserResponse!
+    """ Обновить настройки пользователя (необходима авторизация) """
+    updateUserSettings(input: UpdateUserSettingsInput!): UserResponse!
+    """ Деактивация пользователя (необходима авторизация) """
+    deactivateUser: UserResponse!
+}

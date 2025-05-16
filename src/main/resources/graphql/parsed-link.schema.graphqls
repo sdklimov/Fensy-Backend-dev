@@ -1,0 +1,45 @@
+enum ParsedLinkType {
+    article
+    link
+    podcast
+    product
+}
+
+type ParsedLink {
+    id: ID!
+    postId: ID!
+    post: Post!
+    type: ParsedLinkType!
+    link: String!
+    picture: String
+    title: String!
+    description: String
+    price: Float
+    currency: String
+    interests: [Interest!]!
+}
+
+type ParsedLinkData {
+    type: ParsedLinkType!
+    link: String!
+    picture: String
+    title: String!
+    description: String
+    price: Float
+    currency: String
+}
+
+type ParsedLinkDataResponse {
+    success: Boolean!
+    message: String!
+    parsedLinkData: ParsedLinkData
+}
+
+extend type Query {
+    """
+    Получить данные о ссылке (требуется авторизация)
+
+    Возвращает данные с проанализированной ссылки в зависимости от типа (не создаёт объект в БД)
+    """
+    parseLink(link: String, type: ParsedLinkType): ParsedLinkDataResponse!
+}

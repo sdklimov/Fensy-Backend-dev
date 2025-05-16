@@ -1,0 +1,5 @@
+type UserInterests {
+    userId: ID!
+    interestId: Int!
+    weight: Float!
+}

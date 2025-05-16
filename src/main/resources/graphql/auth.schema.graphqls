@@ -1,0 +1,42 @@
+type AccessTokenPayload {
+    userId: ID
+    languageId: ID
+}
+
+type VerifyResponse {
+    success: Boolean!
+    message: String!
+    payload: AccessTokenPayload
+}
+
+type AuthResponse {
+    success: Boolean!
+    message: String!
+    created: Boolean
+    accessToken: String
+}
+
+type RefreshResponse {
+    success: Boolean!
+    message: String!
+    accessToken: String
+}
+
+type LogoutResponse {
+    success: Boolean!
+    message: String!
+}
+
+type Query {
+    """ Проверить токен доступа (необходима авторизация) """
+    verifyAccessToken: VerifyResponse!
+}
+
+type Mutation {
+    """ Регистрация/Авторизация пользователя через яндекс """
+    yandexOAuth2(accessToken: String!): AuthResponse!
+    """ Обновить токен доступа """
+    refreshAccessToken: RefreshResponse!
+    """ Выйти из аккаунта """
+    logout: LogoutResponse!
+}

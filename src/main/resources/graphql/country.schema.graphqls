@@ -1,0 +1,16 @@
+type Country {
+    id: ID!
+    code: String!
+    name: String!
+}
+
+type CountriesResponse {
+    success: Boolean!
+    message: String!
+    countries: [Country]
+}
+
+extend type Query {
+    """ Получить все существующие страны (необходима авторизация) """
+    getAllCountries: CountriesResponse!
+}

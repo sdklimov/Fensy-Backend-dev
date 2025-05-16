@@ -1,0 +1,54 @@
+enum CollectionAllowViewingFor {
+    any
+    followers
+    none
+    donors
+}
+
+type CollectionCover {
+    id: ID!
+    image: String!
+}
+
+type Collection {
+    id: ID!
+    title: String!
+    description: String!
+    allowViewingFor: String!
+    covers: [CollectionCover]!
+    posts: [Post]!
+}
+
+type CollectionResponse {
+    success: Boolean!
+    message: String!
+    collection: Collection
+}
+
+type CollectionsResponse {
+    success: Boolean!
+    message: String!
+    collections: [Collection]
+}
+
+input CreatedCollection {
+    title: String!
+    description: String!
+    allowViewingFor: String!
+    interestIds: [ID!]!
+    covers: [Upload]
+}
+
+extend type Query {
+    """ Получить подборку пользователя """
+    getCollection(collectionId: String): CollectionResponse!
+    """ Получить все подборки пользователя """
+    getAllUserCollections(username: String): CollectionsResponse!
+}
+
+extend type Mutation {
+    """ Создать подборку (необходима авторизация) """
+    createCollection(input: CreatedCollection!): CollectionResponse!
+    """ Удалить подборку (необходима авторизация) """
+    deleteCollection(collectionId: ID!): CollectionResponse!
+}

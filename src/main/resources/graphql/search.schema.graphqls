@@ -1,0 +1,41 @@
+input SearchQuery {
+    query: String!
+    limit: Int
+    offset: Int
+}
+
+type SearchPostsResponse {
+    success: Boolean!
+    message: String!
+    posts: [Post]
+    total: Int
+    limit: Int
+    offset: Int
+}
+
+type SearchCollectionsResponse {
+    success: Boolean!
+    message: String!
+    collections: [Collection]
+    total: Int
+    limit: Int
+    offset: Int
+}
+
+type SearchUsersResponse {
+    success: Boolean!
+    message: String!
+    users: [User]
+    total: Int
+    limit: Int
+    offset: Int
+}
+
+extend type Query {
+    """ Найты посты по текстовому запросу """
+    searchPosts(searchQuery: SearchQuery!): SearchPostsResponse!
+    """ Найты коллекции по текстовому запросу """
+    searchCollections(searchQuery: SearchQuery!): SearchCollectionsResponse!
+    """ Найты пользователя по текстовому запросу """
+    searchUsers(searchQuery: SearchQuery!): SearchUsersResponse!
+}

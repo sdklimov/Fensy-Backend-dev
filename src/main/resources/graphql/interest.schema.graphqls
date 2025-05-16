@@ -1,0 +1,17 @@
+type Interest {
+    id: ID!
+    name: String!
+    translation: String
+}
+
+type InterestsResponse {
+    success: Boolean
+    message: String
+    interests: [Interest]!
+}
+
+
+extend type Query {
+    """ Получить все существующие интересы """
+    getAllInterests: InterestsResponse!
+}
