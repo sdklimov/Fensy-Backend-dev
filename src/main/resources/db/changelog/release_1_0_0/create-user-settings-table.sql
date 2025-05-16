@@ -10,8 +10,8 @@ create table user_settings
     allow_messages_from    text      not null default 'any',
     notifications_on_email boolean   not null default true,
     ad_on_email            boolean   not null default true,
-    created_at             timestamp not null default now(),
-    updated_at             timestamp not null default now()
+    created_at             timestamp with time zone not null default now(),
+    updated_at             timestamp with time zone not null default now()
 );
 
 -- Индексы

@@ -14,8 +14,8 @@ create table posts
     allow_viewing_for text      not null,
     pinned            boolean   not null default false,
     adult_content     boolean   not null default false,
-    created_at        timestamp not null default now(),
-    updated_at        timestamp not null default now()
+    created_at        timestamp with time zone not null default now(),
+    updated_at        timestamp with time zone not null default now()
 );
 
 -- Индексы

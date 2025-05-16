@@ -20,11 +20,11 @@ create table users
     yandex_id     text unique,
     vk_id         text unique,
     is_active     boolean   not null default true,
-    last_login_at timestamp not null default now(),
+    last_login_at timestamp with time zone not null default now(),
     country_id    bigint    not null references countries (id),
     language_id   bigint    not null references languages (id),
-    created_at    timestamp not null default now(),
-    updated_at    timestamp not null default now()
+    created_at    timestamp with time zone not null default now(),
+    updated_at    timestamp with time zone not null default now()
 );
 
 -- индексы

@@ -34,6 +34,9 @@ dependencies {
     implementation("org.postgresql:r2dbc-postgresql")
     runtimeOnly("org.postgresql:postgresql")
 
+    // graphql
+    implementation("org.springframework.boot:spring-boot-starter-graphql")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
