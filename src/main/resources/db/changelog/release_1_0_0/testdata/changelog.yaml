@@ -1,2 +1,0 @@
-databaseChangeLog:
-  - include: { relativeToChangelogFile: true, file: create-pgroonga-extension.sql }

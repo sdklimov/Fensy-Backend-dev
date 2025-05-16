@@ -3,10 +3,11 @@
 --changeset evbogdanov:release_1_0_0
 --comment: Создание таблицы Языки
 
-create table languages (
-                           id bigserial primary key,
-                           code text not null,
-                           name text not null
+create table languages
+(
+    id   bigserial primary key,
+    code text not null,
+    name text not null
 );
 
 -- Индекс

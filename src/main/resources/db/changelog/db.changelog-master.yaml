@@ -1,4 +1,4 @@
 databaseChangeLog:
   # release_1_0_0
   - include: { relativeToChangelogFile: true, file: release_1_0_0/changelog.yaml }
-#  - include: { relativeToChangelogFile: true, file: release_1_0_0/testdata/changelog.yaml }
+  - include: { relativeToChangelogFile: true, file: release_1_0_0/initdata/changelog.yaml }

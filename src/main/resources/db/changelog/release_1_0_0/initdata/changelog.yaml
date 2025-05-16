@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - include: { relativeToChangelogFile: true, file: insert-interests-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-languages-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-interests-translation-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-countries-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-users-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-post-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-collections-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-collection-post-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-post-collection-init-data.sql }
