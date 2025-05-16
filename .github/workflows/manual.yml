@@ -57,6 +57,5 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          script_stop: true
           script: bash /root/deploy-fsy-appdeploy.sh
 
