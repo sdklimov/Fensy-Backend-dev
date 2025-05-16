@@ -24,3 +24,6 @@ spring:
     url: ${application.datasource.migration.url}
     user: ${application.datasource.username}
     password: ${application.datasource.password}
+
+server:
+  port: ${SERVER_PORT:8080}
