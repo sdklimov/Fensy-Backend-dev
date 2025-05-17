@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController
 class TestController {
 
     @GetMapping()
-    fun test() = "hello from Fansy"
+    fun test() = "hello from Fansy backend"
 
 }
