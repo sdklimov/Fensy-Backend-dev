@@ -16,7 +16,6 @@ data class Post(
     val adultContent: Boolean,
     val originalPostId: Long? = null,
     val isRepost: Boolean,
-//    val countViews: Long,
 //    val reposts: List<Post>,
 //    val originalPost: Post?,
 //    val collections: List<Collection>,
