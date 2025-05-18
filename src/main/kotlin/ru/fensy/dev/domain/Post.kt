@@ -8,7 +8,6 @@ import java.time.OffsetDateTime
 data class Post(
     val id: Long,
     val authorId: Long,
-//    val author: User,
     val title: String?,
     val content: String,
     val allowViewingFor: PostAllowVieweingFor,
@@ -17,13 +16,10 @@ data class Post(
     val originalPostId: Long? = null,
     val isRepost: Boolean,
 //    val reposts: List<Post>,
-//    val originalPost: Post?,
 //    val collections: List<Collection>,
 //    val attachedCollections: List<Collection>,
 //    val attachments: List<PostAttachment>,
-//    val tags: List<Tag>,
 //    val parsedLinks: List<ParsedLink>,
-//    val interests: List<Interest>,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
 )

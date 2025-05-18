@@ -2,9 +2,11 @@ package ru.fensy.dev.graphql.resolver
 
 import org.springframework.graphql.data.method.annotation.SchemaMapping
 import ru.fensy.dev.annotation.FieldResolver
+import ru.fensy.dev.domain.Interest
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.Tag
 import ru.fensy.dev.domain.User
+import ru.fensy.dev.repository.InterestsRepository
 import ru.fensy.dev.repository.PostRepository
 import ru.fensy.dev.repository.PostViewsRepository
 import ru.fensy.dev.repository.TagsRepository
@@ -16,6 +18,7 @@ class PostFieldResolver(
     private val postRepository: PostRepository,
     private val postViewsRepository: PostViewsRepository,
     private val tagsRepository: TagsRepository,
+    private val interestsRepository: InterestsRepository,
 ) {
 
     @SchemaMapping(typeName = "Post", field = "author")
@@ -29,11 +32,6 @@ class PostFieldResolver(
             return postRepository.findById(it)
         }
 
-    @SchemaMapping(typeName = "User", field = "posts")
-    suspend fun posts(user: User): List<Post> {
-        return postRepository.findByAuthorId(user.id)
-    }
-
     @SchemaMapping(typeName = "Post", field = "countViews")
     suspend fun countViews(post: Post): Long {
         return postViewsRepository.countPostViews(post.id)
@@ -42,6 +40,11 @@ class PostFieldResolver(
     @SchemaMapping(typeName = "Post", field = "tags")
     suspend fun tags(post: Post): List<Tag> {
         return tagsRepository.getTagsByPostId(post.id)
+    }
+
+    @SchemaMapping(typeName = "Post", field = "interests")
+    suspend fun interests(post: Post): List<Interest> {
+        return interestsRepository.findByPostId(post.id)
     }
 
 }
