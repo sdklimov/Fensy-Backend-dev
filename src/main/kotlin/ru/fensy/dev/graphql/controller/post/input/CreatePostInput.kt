@@ -1,4 +1,4 @@
-package ru.fensy.dev.graphql.input
+package ru.fensy.dev.graphql.controller.post.input
 
 data class CreatePostInput(
     val originalPostId: Long?,

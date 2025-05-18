@@ -5,7 +5,7 @@ enum UserRole {
 
 type User {
     id: ID!
-    verified: Boolean!
+    is_verified: Boolean!
     fullName: String
     username: String!
     email: String

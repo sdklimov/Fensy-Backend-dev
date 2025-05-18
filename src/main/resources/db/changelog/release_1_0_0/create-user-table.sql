@@ -6,7 +6,7 @@
 create table users
 (
     id            bigserial primary key,
-    verified      boolean   not null default false,
+    is_verified      boolean   not null default false,
     full_name     text,
     username      text unique,
     email         text unique,
@@ -48,7 +48,7 @@ create index if not exists users_pgroonga_text_idx
 comment on table users is 'Пользователи';
 
 comment on column users.id is 'Идентификатор';
-comment on column users.verified is 'Признак верифицированного пользователя';
+comment on column users.is_verified is 'Признак верифицированного пользователя';
 comment on column users.full_name is 'Полное имя';
 comment on column users.username is 'Имя пользователя';
 comment on column users.email is 'Email';

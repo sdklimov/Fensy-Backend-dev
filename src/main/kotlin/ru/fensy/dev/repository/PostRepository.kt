@@ -3,37 +3,44 @@ package ru.fensy.dev.repository
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
-import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.domain.Post
+import ru.fensy.dev.domain.PostAllowVieweingFor
 import java.time.OffsetDateTime
 
 @Component
+@Transactional
 class PostRepository(
     private val databaseClient: DatabaseClient,
-    private val objectMapper: ObjectMapper,
 ) {
 
-    suspend fun create(post: Post): Post {
+    suspend fun findById(id: Long): Post {
         return databaseClient
             .sql {
                 """
-                insert into posts (original_post_id, is_repost, author_id, title, content, allow_viewing_for, pinned, adult_content)
-                values (:originalPostId, :isReport, :authorId, :title, :content, :allowViewingFor, :pinned, :adultContent)
-                returning *
+                select * from posts where id = :id
             """.trimIndent()
             }
-            .bind("originalPostId", post.originalPostId)
-            .bind("isReport", post.isRepost)
-            .bind("authorId", post.authorId)
-            .bind("title", post.title)
-            .bind("content", post.content)
-            .bind("allowViewingFor", post.allowViewingFor)
-            .bind("pinned", post.pinned)
-            .bind("adultContent", post.adultContent)
+            .bind("id", id)
             .fetch()
             .one()
             .map { of(it) }
+            .awaitSingle()
+    }
+
+    suspend fun findByAuthorId(id: Long): List<Post> {
+        return databaseClient
+            .sql {
+                """
+                select * from posts where author_id = :authorId
+            """.trimIndent()
+            }
+            .bind("authorId", id)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
             .awaitSingle()
     }
 
@@ -41,17 +48,16 @@ class PostRepository(
         return source.let {
             Post(
                 id = it["id"] as Long,
-                originalPostId = it["original_post_id"] as? Long,
-                isRepost = it["is_repost"] as Boolean,
                 authorId = it["author_id"] as Long,
-                title = it["title"] as String,
+                title = it["title"] as? String,
                 content = it["content"] as String,
-                allowViewingFor = it["allow_viewing_for"] as String,
+                allowViewingFor = PostAllowVieweingFor.valueOf(it["allow_viewing_for"] as String),
                 pinned = it["pinned"] as Boolean,
                 adultContent = it["adult_content"] as Boolean,
+                originalPostId = it["original_post_id"] as? Long,
+                isRepost = it["is_repost"] as Boolean,
                 createdAt = it["created_at"] as OffsetDateTime,
-                updatedAt = it["updated_at"] as OffsetDateTime
-
+                updatedAt = it["updated_at"] as OffsetDateTime,
             )
         }
     }

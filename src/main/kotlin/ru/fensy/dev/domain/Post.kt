@@ -1,21 +1,30 @@
 package ru.fensy.dev.domain
 
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
 /**
  * Пост
  */
 data class Post(
-    val id: Long? = null,
-    val originalPostId: Long? = null,
-    val isRepost: Boolean?,
+    val id: Long,
     val authorId: Long,
+//    val author: User,
     val title: String?,
-    val content: String?,
-    val allowViewingFor: String,
-    val pinned: Boolean?,
-    val adultContent: Boolean?,
-    val createdAt: OffsetDateTime? = null,
-    val updatedAt: OffsetDateTime? = null,
+    val content: String,
+    val allowViewingFor: PostAllowVieweingFor,
+    val pinned: Boolean,
+    val adultContent: Boolean,
+    val originalPostId: Long? = null,
+    val isRepost: Boolean,
+//    val countViews: Long,
+//    val reposts: List<Post>,
+//    val originalPost: Post?,
+//    val collections: List<Collection>,
+//    val attachedCollections: List<Collection>,
+//    val attachments: List<PostAttachment>,
+//    val tags: List<Tag>,
+//    val parsedLinks: List<ParsedLink>,
+//    val interests: List<Interest>,
+    val createdAt: OffsetDateTime,
+    val updatedAt: OffsetDateTime,
 )
