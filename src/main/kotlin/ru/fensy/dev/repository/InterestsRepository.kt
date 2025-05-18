@@ -27,6 +27,20 @@ class InterestsRepository(
             .collectList()
             .awaitSingle()
 
+    suspend fun findByParsedLinkId(parsedLinkId: Long): List<Interest> =
+        databaseClient
+            .sql {
+                """
+                select * from interests where id in (select interest_id from parsed_link_interests where parsed_link_id = :parsedLinkId);
+            """.trimIndent()
+            }
+            .bind("parsedLinkId", parsedLinkId)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+
     private fun of(source: Map<String, Any>) =
         source.let {
             Interest(

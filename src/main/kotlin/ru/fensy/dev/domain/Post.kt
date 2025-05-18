@@ -19,7 +19,6 @@ data class Post(
 //    val collections: List<Collection>,
 //    val attachedCollections: List<Collection>,
 //    val attachments: List<PostAttachment>,
-//    val parsedLinks: List<ParsedLink>,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
 )
