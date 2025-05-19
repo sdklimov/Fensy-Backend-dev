@@ -27,6 +27,20 @@ class CollectionRepository(
             .collectList()
             .awaitSingle()
 
+    suspend fun findAttachedCollectionsByPostId(postId: Long): List<Collection> =
+        databaseClient
+            .sql(
+                """
+                select * from collections where id in (select collection_id from post_collections where post_id = :postId);
+            """.trimIndent()
+            )
+            .bind("postId", postId)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+
     private fun of(source: Map<String, Any>) = source.let {
         Collection(
             id = it["id"] as Long,

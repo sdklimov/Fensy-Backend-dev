@@ -76,4 +76,9 @@ class PostFieldResolver(
         return postRepository.findByOriginalPostId(post.id)
     }
 
+    @SchemaMapping(typeName = "Post", field = "attachedCollections")
+    suspend fun attachedCollections(post: Post): List<Collection> {
+        return collectionRepository.findAttachedCollectionsByPostId(post.id)
+    }
+
 }
