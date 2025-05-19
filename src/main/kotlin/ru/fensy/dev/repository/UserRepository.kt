@@ -1,24 +1,24 @@
 package ru.fensy.dev.repository
 
+import java.time.OffsetDateTime
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.domain.UserRole
-import java.time.OffsetDateTime
 
 @Component
-@Transactional
 class UserRepository(
     private val databaseClient: DatabaseClient,
 ) {
 
     suspend fun findById(id: Long): User {
         return databaseClient
-            .sql { """
+            .sql {
+                """
                 select * from users where id = :id
-            """.trimIndent() }
+            """.trimIndent()
+            }
             .bind("id", id)
             .fetch()
             .one()
@@ -45,7 +45,7 @@ class UserRepository(
                     createdAt = it["created_at"] as OffsetDateTime,
                     updatedAt = it["updated_at"] as OffsetDateTime,
 
-                )
+                    )
             }
             .awaitSingle()
     }

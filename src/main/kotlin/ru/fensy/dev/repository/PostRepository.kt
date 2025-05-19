@@ -1,16 +1,13 @@
 package ru.fensy.dev.repository
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import java.time.OffsetDateTime
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.PostAllowVieweingFor
-import java.time.OffsetDateTime
 
 @Component
-@Transactional
 class PostRepository(
     private val databaseClient: DatabaseClient,
 ) {
@@ -43,6 +40,20 @@ class PostRepository(
             .collectList()
             .awaitSingle()
     }
+
+    suspend fun getByCollectionId(collectionId: Long): List<Post> =
+        databaseClient
+            .sql(
+                """
+                select * from posts where id = any ( select post_id from collection_posts where collection_id = :collectionId)
+            """.trimIndent()
+            )
+            .bind("collectionId", collectionId)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
 
     private fun of(source: Map<String, Any>): Post {
         return source.let {

@@ -1,12 +1,14 @@
 package ru.fensy.dev.usecase.post
 
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.repository.PostRepository
 
 /**
  * Создать пост
  */
 @Component
+@Transactional
 class CreatePostUseCase(
     private val postRepository: PostRepository,
 ) {

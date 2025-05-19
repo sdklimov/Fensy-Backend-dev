@@ -16,9 +16,7 @@ data class Post(
     val originalPostId: Long? = null,
     val isRepost: Boolean,
 //    val reposts: List<Post>,
-//    val collections: List<Collection>,
 //    val attachedCollections: List<Collection>,
-//    val attachments: List<PostAttachment>,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
 )
