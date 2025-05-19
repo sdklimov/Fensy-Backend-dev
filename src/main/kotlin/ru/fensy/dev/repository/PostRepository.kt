@@ -41,6 +41,23 @@ class PostRepository(
             .awaitSingle()
     }
 
+    suspend fun findByUserName(userName: String): List<Post> {
+        return databaseClient
+            .sql {
+                """
+                    select * from posts p
+                    join users u on p.author_id = u.id
+                    where u.username = :userName
+            """.trimIndent()
+            }
+            .bind("userName", userName)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+    }
+
     suspend fun getByCollectionId(collectionId: Long): List<Post> =
         databaseClient
             .sql(
