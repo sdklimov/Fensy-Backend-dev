@@ -71,4 +71,9 @@ class PostFieldResolver(
         return postAttachmentsRepository.findByPostId(post.id)
     }
 
+    @SchemaMapping(typeName = "Post", field = "reposts")
+    suspend fun reposts(post: Post): List<Post> {
+        return postRepository.findByOriginalPostId(post.id)
+    }
+
 }

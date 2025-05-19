@@ -55,6 +55,18 @@ class PostRepository(
             .collectList()
             .awaitSingle()
 
+    suspend fun findByOriginalPostId(originalPostId: Long): List<Post> =
+        databaseClient
+            .sql("""
+                select * from posts where original_post_id = :originalPostId
+            """.trimIndent())
+            .bind("originalPostId", originalPostId)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+
     private fun of(source: Map<String, Any>): Post {
         return source.let {
             Post(
