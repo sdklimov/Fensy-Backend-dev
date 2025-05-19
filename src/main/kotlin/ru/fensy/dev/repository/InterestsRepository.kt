@@ -2,6 +2,7 @@ package ru.fensy.dev.repository
 
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.Interest
 
@@ -40,6 +41,16 @@ class InterestsRepository(
             .map { of(it) }
             .collectList()
             .awaitSingle()
+
+    suspend fun addInterestsToPost(postId: Long, interests: List<Long>) {
+        val values = interests.joinToString(", ") { "($postId, $it)" }
+        databaseClient
+            .sql("""
+                insert into post_interests (post_id, interest_id) values $values
+            """.trimIndent())
+            .fetch()
+            .awaitRowsUpdated()
+    }
 
     private fun of(source: Map<String, Any>) =
         source.let {

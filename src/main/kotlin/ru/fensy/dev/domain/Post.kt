@@ -12,10 +12,9 @@ data class Post(
     val content: String,
     val allowViewingFor: PostAllowVieweingFor,
     val pinned: Boolean,
-    val adultContent: Boolean,
+    val adultContent: Boolean = false,
     val originalPostId: Long? = null,
-    val isRepost: Boolean,
-//    val attachedCollections: List<Collection>,
+    val isRepost: Boolean = false,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
 )

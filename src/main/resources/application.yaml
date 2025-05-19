@@ -5,6 +5,20 @@ application:
     password: ${DB_PASSWORD:postgres}
     migration:
       url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:local_db}
+  post-properties:
+    allowed-mime-types:
+      image: ${ALLOWED_IMAGE_MIME_TYPES:image/jpeg,image/png,image/gif,image/webp}
+      video: ${ALLOWED_VIDEO_MIME_TYPES:video/mp4,video/webm,video/ogg}
+      audio: ${ALLOWED_AUDIO_MIME_TYPES:audio/mpeg,audio/ogg,audio/wav}
+    file-type-amount-limits:
+      image: ${ALLOWED_IMAGE_COUNT:10}
+      video: ${ALLOWED_VIDEO_COUNT:5}
+      audio: ${ALLOWED_AUDIO_COUNT:5}
+      link: ${ALLOWED_LINK_COUNT:5}
+      article: ${ALLOWED_ARTICLE_COUNT:5}
+      podcast: ${ALLOWED_PODCAST_COUNT:5}
+      product: ${ALLOWED_PRODUCT_COUNT:5}
+      collection: ${ALLOWED_PRODUCT_COUNT:5}
 
 spring:
   graphql:

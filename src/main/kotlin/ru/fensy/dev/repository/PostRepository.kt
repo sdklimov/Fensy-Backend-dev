@@ -3,9 +3,12 @@ package ru.fensy.dev.repository
 import java.time.OffsetDateTime
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.r2dbc.core.awaitRowsUpdated
+import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.PostAllowVieweingFor
+import ru.fensy.dev.repository.querydata.CreatePostQueryData
 
 @Component
 class PostRepository(
@@ -74,14 +77,42 @@ class PostRepository(
 
     suspend fun findByOriginalPostId(originalPostId: Long): List<Post> =
         databaseClient
-            .sql("""
+            .sql(
+                """
                 select * from posts where original_post_id = :originalPostId
-            """.trimIndent())
+            """.trimIndent()
+            )
             .bind("originalPostId", originalPostId)
             .fetch()
             .all()
             .map { of(it) }
             .collectList()
+            .awaitSingle()
+
+    suspend fun resetPinned(authorId: Long) {
+        databaseClient
+            .sql("update posts set pinned = false where author_id = :authorId")
+            .bind("authorId", authorId)
+            .fetch()
+            .awaitRowsUpdated()
+    }
+
+    suspend fun create(post: CreatePostQueryData): Post =
+        databaseClient
+            .sql(
+                """
+              insert into posts(author_id, title, content, allow_viewing_for)
+                values (:authorId, :title, :content, :allowViewingFor)
+                returning *; 
+            """.trimIndent()
+            )
+            .bind("authorId", post.authorId)
+            .bind("title", post.title)
+            .bind("content", post.content)
+            .bind("allowViewingFor", post.allowViewingFor.name)
+            .fetch()
+            .one()
+            .map { of(it) }
             .awaitSingle()
 
     private fun of(source: Map<String, Any>): Post {

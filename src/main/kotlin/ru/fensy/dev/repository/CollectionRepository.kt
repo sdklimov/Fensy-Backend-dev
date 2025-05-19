@@ -2,6 +2,7 @@ package ru.fensy.dev.repository
 
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.Collection
 
@@ -40,6 +41,16 @@ class CollectionRepository(
             .map { of(it) }
             .collectList()
             .awaitSingle()
+
+    suspend fun addPostToCollections(postId: Long, collectionIds: List<Long>) {
+        val values = collectionIds.joinToString(", ") { "($postId, $it)" }
+        databaseClient
+            .sql("""
+                insert into post_collections(post_id, collection_id) values $values;
+            """.trimIndent())
+            .fetch()
+            .awaitRowsUpdated()
+    }
 
     private fun of(source: Map<String, Any>) = source.let {
         Collection(

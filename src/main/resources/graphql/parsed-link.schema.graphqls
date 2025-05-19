@@ -1,8 +1,8 @@
 enum ParsedLinkType {
-    article
-    link
-    podcast
-    product
+    ARTICLE
+    LINK
+    PODCAST
+    PRODUCT
 }
 
 type ParsedLink {

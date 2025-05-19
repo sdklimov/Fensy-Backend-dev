@@ -1,8 +1,8 @@
 enum PostAllowViewingFor {
-    any
-    followers
-    none
-    donors
+    ANY
+    FOLLOWERS
+    NONE
+    DONORS
 }
 
 type PostAttachment {

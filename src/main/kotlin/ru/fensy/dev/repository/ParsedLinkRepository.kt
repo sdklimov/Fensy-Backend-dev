@@ -3,9 +3,11 @@ package ru.fensy.dev.repository
 import java.math.BigDecimal
 import kotlinx.coroutines.reactive.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.ParsedLink
 import ru.fensy.dev.domain.ParsedLinkType
+import ru.fensy.dev.repository.querydata.CreateParsedLinkQueryData
 
 /**
  * Репозиторий parsed_links
@@ -28,6 +30,39 @@ class ParsedLinkRepository(
             .map { of(it) }
             .collectList()
             .awaitSingle()
+
+    suspend fun create(parsedLink: CreateParsedLinkQueryData): ParsedLink {
+        return databaseClient
+            .sql(
+                """
+                insert into parsed_links(post_id, type, link, picture, title, description, price, currency) 
+                values (:postId, :type, :link, :picture, :title, :description, :price, :currency) returning *
+            """.trimIndent()
+            )
+            .bind("postId", parsedLink.postId)
+            .bind("type", parsedLink.type.name)
+            .bind("link", parsedLink.link)
+            .bind("picture", parsedLink.picture)
+            .bind("title", parsedLink.title)
+            .bind("description", parsedLink.description)
+            .bind("price", parsedLink.price)
+            .bind("currency", parsedLink.currency)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingle()
+    }
+
+    suspend fun addParsedLinkToInterest(parsedLinkId: Long, interestId: Long) {
+        databaseClient
+            .sql("""
+                insert into parsed_link_interests (parsed_link_id, interest_id) values (:parsedLinkId, :interestId)
+            """.trimIndent())
+            .bind("parsedLinkId", parsedLinkId)
+            .bind("interestId", interestId)
+            .fetch()
+            .awaitRowsUpdated()
+    }
 
     private fun of(source: Map<String, Any>) = source.let {
         ParsedLink(

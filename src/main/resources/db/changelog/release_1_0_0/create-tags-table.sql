@@ -5,7 +5,7 @@
 
 create table tags
 (
-    id   bigint primary key,
+    id   bigserial primary key,
     name text not null unique
 );
 
