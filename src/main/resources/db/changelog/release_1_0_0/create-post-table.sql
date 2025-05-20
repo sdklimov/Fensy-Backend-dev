@@ -6,14 +6,15 @@
 create table posts
 (
     id                bigserial primary key,
-    original_post_id  bigint    references posts (id) on update cascade on delete set null,
-    is_repost         boolean   not null default false,
-    author_id         bigserial not null references users (id) on update cascade on delete cascade,
+    original_post_id  bigint                   references posts (id) on update cascade on delete set null,
+    is_repost         boolean                  not null default false,
+    author_id         bigserial                not null references users (id) on update cascade on delete cascade,
     title             text,
     content           text,
-    allow_viewing_for text      not null,
-    pinned            boolean   not null default false,
-    adult_content     boolean   not null default false,
+    allow_viewing_for text                     not null,
+    pinned            boolean                  not null default false,
+    adult_content     boolean                  not null default false,
+    is_deleted        boolean                           default false,
     created_at        timestamp with time zone not null default now(),
     updated_at        timestamp with time zone not null default now()
 );

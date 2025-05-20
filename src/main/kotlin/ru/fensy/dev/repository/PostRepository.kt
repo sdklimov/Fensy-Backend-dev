@@ -19,7 +19,7 @@ class PostRepository(
         return databaseClient
             .sql {
                 """
-                select * from posts where id = :id
+                select * from posts where id = :id and not is_deleted
             """.trimIndent()
             }
             .bind("id", id)
@@ -34,6 +34,7 @@ class PostRepository(
             .sql {
                 """
                 select * from posts where author_id = :authorId
+                and not is_deleted
             """.trimIndent()
             }
             .bind("authorId", id)
@@ -51,6 +52,7 @@ class PostRepository(
                     select * from posts p
                     join users u on p.author_id = u.id
                     where u.username = :userName
+                    and not is_deleted
             """.trimIndent()
             }
             .bind("userName", userName)
@@ -65,7 +67,7 @@ class PostRepository(
         databaseClient
             .sql(
                 """
-                select * from posts where id = any ( select post_id from collection_posts where collection_id = :collectionId)
+                select * from posts where id = any ( select post_id from collection_posts where collection_id = :collectionId) and not is_deleted
             """.trimIndent()
             )
             .bind("collectionId", collectionId)
@@ -79,7 +81,7 @@ class PostRepository(
         databaseClient
             .sql(
                 """
-                select * from posts where original_post_id = :originalPostId
+                select * from posts where original_post_id = :originalPostId and not is_deleted
             """.trimIndent()
             )
             .bind("originalPostId", originalPostId)
@@ -91,7 +93,7 @@ class PostRepository(
 
     suspend fun resetPinned(authorId: Long) {
         databaseClient
-            .sql("update posts set pinned = false where author_id = :authorId")
+            .sql("update posts set pinned = false where author_id = :authorId and not is_deleted")
             .bind("authorId", authorId)
             .fetch()
             .awaitRowsUpdated()
@@ -101,8 +103,8 @@ class PostRepository(
         databaseClient
             .sql(
                 """
-              insert into posts(author_id, title, content, allow_viewing_for)
-                values (:authorId, :title, :content, :allowViewingFor)
+              insert into posts(author_id, title, content, allow_viewing_for, original_post_id)
+                values (:authorId, :title, :content, :allowViewingFor, :originalPostId)
                 returning *; 
             """.trimIndent()
             )
@@ -110,6 +112,7 @@ class PostRepository(
             .bind("title", post.title)
             .bind("content", post.content)
             .bind("allowViewingFor", post.allowViewingFor.name)
+            .bind("originalPostId", post.originalPostId)
             .fetch()
             .one()
             .map { of(it) }

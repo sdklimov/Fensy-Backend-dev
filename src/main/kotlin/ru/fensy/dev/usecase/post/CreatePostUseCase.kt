@@ -7,7 +7,6 @@ import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.file.FilePersister
-import ru.fensy.dev.graphql.controller.post.input.CreatePostInput
 import ru.fensy.dev.graphql.controller.post.response.PostResponse
 import ru.fensy.dev.repository.CollectionRepository
 import ru.fensy.dev.repository.InterestsRepository
@@ -18,6 +17,8 @@ import ru.fensy.dev.repository.TagsRepository
 import ru.fensy.dev.repository.querydata.CreateParsedLinkQueryData
 import ru.fensy.dev.repository.querydata.CreatePostQueryData
 import ru.fensy.dev.service.FileMimeTypeValidateService
+import ru.fensy.dev.usecase.post.operationmodel.CreatePostOperationRq
+
 //import ru.fensy.dev.service.ValidateCreatePostRequestService
 
 /**
@@ -37,7 +38,7 @@ class CreatePostUseCase(
     private val postAttachmentRepository: PostAttachmentRepository,
 ) {
 
-    suspend fun execute(input: CreatePostInput): PostResponse = coroutineScope {
+    suspend fun execute(input: CreatePostOperationRq): PostResponse = coroutineScope {
         val currentUserId = 1L // todo: Брать из контекста когда будет JWT
 //        input.attachments?.let {
 //            fileMimeTypeValidateService.validate(it)
@@ -60,6 +61,7 @@ class CreatePostUseCase(
         }
 
         val newPostRq = CreatePostQueryData(
+            originalPostId = input.originalPostId,
             authorId = currentUserId,
             title = input.title,
             content = input.content,
@@ -91,14 +93,14 @@ class CreatePostUseCase(
 //            }
 //    }
 
-    private suspend fun createInterests(postId: Long, input: CreatePostInput) {
+    private suspend fun createInterests(postId: Long, input: CreatePostOperationRq) {
         input.interestIds.takeIf { it.isNotEmpty() }
             ?.let { interestIds ->
                 interestRepository.addInterestsToPost(postId, interestIds)
             }
     }
 
-    private suspend fun createTags(postId: Long, input: CreatePostInput) {
+    private suspend fun createTags(postId: Long, input: CreatePostOperationRq) {
         input.tags.takeIf { it.isNotEmpty() }
             ?.let {
                 val tagIds = tagsRepository.createOrUpdate(it)
@@ -106,7 +108,7 @@ class CreatePostUseCase(
             }
     }
 
-    private suspend fun processParsedLinks(postId: Long, input: CreatePostInput) {
+    private suspend fun processParsedLinks(postId: Long, input: CreatePostOperationRq) {
         input.parsedLinks?.takeIf { it.isNotEmpty() }
             ?.map { parsedLink ->
                 val rq = CreateParsedLinkQueryData(
@@ -125,7 +127,7 @@ class CreatePostUseCase(
 
     }
 
-    private suspend fun processCollections(postId: Long, input: CreatePostInput) {
+    private suspend fun processCollections(postId: Long, input: CreatePostOperationRq) {
         input.collectionIds
             .takeIf { it.isNotEmpty() }
             ?.let { collectionIds ->
