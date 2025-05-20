@@ -70,6 +70,19 @@ input CreatedPost {
     collectionIds: [ID]
 }
 
+input UpdatePost {
+    id: ID!
+    title: String!
+    content: String!
+    allowViewingFor: PostAllowViewingFor!
+    pinned: Boolean
+    tags: [String]
+    attachments: [Upload]
+    parsedLinks: [CreatedParsedLink]
+    interestIds: [ID!]!
+    collectionIds: [ID]
+}
+
 input CreatedRepost {
     originalPostId: ID!
     title: String
@@ -96,7 +109,7 @@ extend type Mutation {
     """ Создать пост (необходима авторизация) """
     createPost(input: CreatedPost!): PostResponse!
     """ Обновить пост (необходима авторизация) """
-    updatePost(input: CreatedPost!): PostResponse!
+    updatePost(input: UpdatePost!): PostResponse!
     """ Удалить пост (необходима авторизация) """
     deletePost(postId: ID!): PostResponse!
     """ Добавить посту просмотр от пользователя """

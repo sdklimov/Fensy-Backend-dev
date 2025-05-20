@@ -45,9 +45,24 @@ class CollectionRepository(
     suspend fun addPostToCollections(postId: Long, collectionIds: List<Long>) {
         val values = collectionIds.joinToString(", ") { "($postId, $it)" }
         databaseClient
-            .sql("""
+            .sql(
+                """
                 insert into post_collections(post_id, collection_id) values $values;
-            """.trimIndent())
+            """.trimIndent()
+            )
+            .fetch()
+            .awaitRowsUpdated()
+    }
+
+    suspend fun deleteFromPost(postId: Long, ids: List<Long>) {
+        databaseClient
+            .sql(
+                """
+                delete from post_collections where post_id = :postId and collection_id = any (:ids)
+            """.trimIndent()
+            )
+            .bind("postId", postId)
+            .bind("ids", ids.toTypedArray())
             .fetch()
             .awaitRowsUpdated()
     }

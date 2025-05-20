@@ -42,6 +42,10 @@ class TagsRepository(
             .awaitSingle()
     }
 
+    suspend fun deleteTagsByPostId(postId: Long, tagIds: List<Long>) {
+
+    }
+
     suspend fun addTagsToPost(postId: Long, tagIds: List<Long>) {
         val values = tagIds.joinToString(", ") { "($postId, $it)" }
         databaseClient

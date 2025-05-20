@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.PostAllowVieweingFor
 import ru.fensy.dev.repository.querydata.CreatePostQueryData
+import ru.fensy.dev.repository.querydata.UpdatePostQueryData
 
 @Component
 class PostRepository(
@@ -117,6 +118,26 @@ class PostRepository(
             .one()
             .map { of(it) }
             .awaitSingle()
+
+    suspend fun update(post: UpdatePostQueryData): Post {
+       return databaseClient
+            .sql(
+                """
+                update posts set author_id = :authorId,  title = :title, content = :content, allow_viewing_for = :allowViewingFor
+                where id = :postId and not is_deleted
+                returning *; 
+            """.trimIndent()
+            )
+            .bind("postId", post.id)
+            .bind("authorId", post.authorId)
+            .bind("title", post.title)
+            .bind("content", post.content)
+            .bind("allowViewingFor", post.allowViewingFor.name)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingle()
+    }
 
     private fun of(source: Map<String, Any>): Post {
         return source.let {

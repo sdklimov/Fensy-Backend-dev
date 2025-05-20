@@ -52,6 +52,17 @@ class InterestsRepository(
             .awaitRowsUpdated()
     }
 
+    suspend fun deleteInterestsFromPost(postId: Long, interestIds: List<Long>) {
+        databaseClient
+            .sql("""
+                delete from post_interests where post_id = :postId and interest_id = any (:interestIds);
+            """.trimIndent())
+            .bind("postId", postId)
+            .bind("interestIds", interestIds.toTypedArray())
+            .fetch()
+            .awaitRowsUpdated()
+    }
+
     private fun of(source: Map<String, Any>) =
         source.let {
             Interest(

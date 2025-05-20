@@ -53,6 +53,16 @@ class ParsedLinkRepository(
             .awaitSingle()
     }
 
+    suspend fun deleteById(ids: List<Long>) {
+        databaseClient
+            .sql("""
+                delete from parsed_links where id = any (:ids)
+            """.trimIndent())
+            .bind("ids", ids.toTypedArray())
+            .fetch()
+            .awaitRowsUpdated()
+    }
+
     suspend fun addParsedLinkToInterest(parsedLinkId: Long, interestId: Long) {
         databaseClient
             .sql("""
