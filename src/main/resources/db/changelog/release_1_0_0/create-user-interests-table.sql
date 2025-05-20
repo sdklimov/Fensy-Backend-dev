@@ -5,9 +5,9 @@
 
 create table user_interests
 (
-    user_id     bigint        not null references users (id) on update cascade on delete cascade,
-    interest_id bigint        not null references interests (id) on update cascade on delete cascade,
-    weight      decimal(3, 2) not null default 1.0,
+    user_id     bigint           not null references users (id) on update cascade on delete cascade,
+    interest_id bigint           not null references interests (id) on update cascade on delete cascade,
+    weight      DOUBLE PRECISION NOT NULL DEFAULT 1.0,
     primary key (user_id, interest_id)
 );
 
