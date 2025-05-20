@@ -7,7 +7,7 @@ create table user_settings
 (
     id                     bigserial primary key,
     user_id                bigint    not null unique references users (id) on update cascade on delete cascade,
-    allow_messages_from    text      not null default 'any',
+    allow_messages_from    text      not null default 'ANY',
     notifications_on_email boolean   not null default true,
     ad_on_email            boolean   not null default true,
     created_at             timestamp with time zone not null default now(),

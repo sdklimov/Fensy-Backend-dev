@@ -1,7 +1,7 @@
 enum AllowMessagesFrom {
-    any
-    followers
-    none
+    ANY
+    FOLLOWERS
+    NONE
 }
 
 type UserSettings {

@@ -54,7 +54,8 @@ class PostRepository(
                     select * from posts p
                     join users u on p.author_id = u.id
                     where u.username = :userName
-                    and not is_deleted
+                    and not p.is_deleted
+                    and p.allow_viewing_for != 'NONE'
                     offset :offset limit :limit
             """.trimIndent()
             }
