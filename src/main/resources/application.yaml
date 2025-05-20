@@ -22,6 +22,8 @@ application:
 
 spring:
   graphql:
+    graphiql:
+      enabled: true
     schema:
       locations: classpath:graphql/
     path: /gql
