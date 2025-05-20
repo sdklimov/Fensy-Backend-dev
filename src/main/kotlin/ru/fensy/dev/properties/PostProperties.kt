@@ -5,7 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConfigurationProperties(prefix = "application.post-properties")
 data class PostProperties(
     val allowedMimeTypes: AllowedMimeTypesProperties,
-    val fileTypeAmountLimits: FileTypeAmountLimitsProperties
+    val fileTypeAmountLimits: FileTypeAmountLimitsProperties,
+    val pagination: PaginationProperties,
 ) {
     val allAllowedMimeTypes = (allowedMimeTypes.audio + allowedMimeTypes.video + allowedMimeTypes.image).toHashSet()
 }

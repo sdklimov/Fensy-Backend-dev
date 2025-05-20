@@ -6,6 +6,7 @@ import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Component
+import ru.fensy.dev.domain.PageRequest
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.PostAllowVieweingFor
 import ru.fensy.dev.repository.querydata.CreatePostQueryData
@@ -46,7 +47,7 @@ class PostRepository(
             .awaitSingle()
     }
 
-    suspend fun findByUserName(userName: String): List<Post> {
+    suspend fun findByUserName(userName: String, pageRequest: PageRequest): List<Post> {
         return databaseClient
             .sql {
                 """
@@ -54,9 +55,12 @@ class PostRepository(
                     join users u on p.author_id = u.id
                     where u.username = :userName
                     and not is_deleted
+                    offset :offset limit :limit
             """.trimIndent()
             }
             .bind("userName", userName)
+            .bind("offset", pageRequest.offset)
+            .bind("limit", pageRequest.pageSize)
             .fetch()
             .all()
             .map { of(it) }

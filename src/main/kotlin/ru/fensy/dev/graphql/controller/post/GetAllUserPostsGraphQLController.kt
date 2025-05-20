@@ -1,6 +1,6 @@
 package ru.fensy.dev.graphql.controller.post
 
-import org.springframework.graphql.data.method.annotation.Argument
+import graphql.schema.DataFetchingEnvironment
 import org.springframework.graphql.data.method.annotation.QueryMapping
 import org.springframework.stereotype.Controller
 import ru.fensy.dev.graphql.controller.post.response.PostsResponse
@@ -12,6 +12,6 @@ class GetAllUserPostsGraphQLController(
 ) {
 
     @QueryMapping("getAllUserPosts")
-    suspend fun getAllUserPosts(@Argument username: String): PostsResponse = getAllUserPostsUseCase.execute(username)
+    suspend fun getAllUserPosts(env: DataFetchingEnvironment): PostsResponse = getAllUserPostsUseCase.execute(env)
 
 }
