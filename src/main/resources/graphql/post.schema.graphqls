@@ -1,3 +1,7 @@
+directive @page(
+    pageNumber: Int = 0, pageSize: Int = 20
+) on FIELD
+
 enum PostAllowViewingFor {
     ANY
     FOLLOWERS
