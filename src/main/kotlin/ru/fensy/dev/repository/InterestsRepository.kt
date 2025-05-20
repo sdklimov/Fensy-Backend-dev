@@ -63,6 +63,18 @@ class InterestsRepository(
             .awaitRowsUpdated()
     }
 
+    suspend fun addUserInterests(userId: Long, interestIds: List<Long>) {
+        val values = interestIds.joinToString(", ") { "($userId, $it)" }
+        databaseClient
+            .sql("""
+                insert into user_interests(user_id, interest_id)
+                values $values
+                on conflict (user_id, interest_id) do update set weight =  user_interests.weight + 0.1;
+            """.trimIndent())
+            .fetch()
+            .awaitRowsUpdated()
+    }
+
     private fun of(source: Map<String, Any>) =
         source.let {
             Interest(

@@ -2,6 +2,7 @@ package ru.fensy.dev.repository
 
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
+import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.stereotype.Component
 
 /**
@@ -24,5 +25,18 @@ class PostViewsRepository(
             .one()
             .map { it["count"] as Long }
             .awaitSingle()
+
+    suspend fun addPostView(postId: Long, idAddress: String) {
+        databaseClient
+            .sql("""
+                insert into post_views (post_id, ip_address)
+                values (:postId, :ipAddress::inet)
+                on conflict do nothing ;
+            """.trimIndent())
+            .bind("postId", postId)
+            .bind("ipAddress", idAddress)
+            .fetch()
+            .awaitRowsUpdated()
+    }
 
 }
