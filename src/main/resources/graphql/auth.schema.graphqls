@@ -33,7 +33,7 @@ type Query {
 }
 
 type Mutation {
-    """ Регистрация/Авторизация пользователя через яндекс """
+    """ Регистрация/Авторизация пользователя """
     auth(provider: String!, accessToken: String!): AuthResponse!
     """ Обновить токен доступа """
     refreshAccessToken: RefreshResponse!

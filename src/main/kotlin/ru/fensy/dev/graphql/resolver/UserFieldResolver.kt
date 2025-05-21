@@ -16,12 +16,12 @@ class UserFieldResolver(
 
     @SchemaMapping(typeName = "User", field = "posts")
     suspend fun posts(user: User): List<Post> {
-        return postRepository.findByAuthorId(user.id)
+        return postRepository.findByAuthorId(user.id!!)
     }
 
     @SchemaMapping(typeName = "User", field = "settings")
     suspend fun settings(user: User): UserSettings {
-        return userSettingsRepository.getByUserId(user.id)
+        return userSettingsRepository.getByUserId(user.id!!)
     }
 
 }

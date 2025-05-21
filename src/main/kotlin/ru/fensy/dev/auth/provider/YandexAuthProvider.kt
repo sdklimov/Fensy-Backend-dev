@@ -1,10 +1,14 @@
 package ru.fensy.dev.auth.provider
 
 import java.time.OffsetDateTime
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Component
 import ru.fensy.dev.auth.domain.AuthResult
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.domain.UserRole
+import ru.fensy.dev.repository.CountriesRepository
+import ru.fensy.dev.repository.LanguagesRepository
 import ru.fensy.dev.repository.UserRepository
 import ru.fensy.dev.service.YandexUserInfoProxyService
 
@@ -12,6 +16,8 @@ import ru.fensy.dev.service.YandexUserInfoProxyService
 class YandexAuthProvider(
     private val yandexUserInfoProxyService: YandexUserInfoProxyService,
     private val userRepository: UserRepository,
+    private val countriesRepository: CountriesRepository, //todo: Вынести в сервис с ленивой загрузкой (кеш)
+    private val languagesRepository: LanguagesRepository, //todo: Вынести в сервис с ленивой загрузкой (кеш)
 ) : AuthProvider {
 
     override fun name(): String = PROVIDER_NAME
@@ -21,7 +27,7 @@ class YandexAuthProvider(
             .getUserInfo(accessToken)
         val createUserResult = getOrCreateUser(userInfo)
 
-        return AuthResult(isUserCreated = createUserResult.isCreated, bearerToken = "")
+        return AuthResult(isUserCreated = createUserResult.isCreated, bearerToken = "Bearer aasdad......")
     }
 
     private suspend fun getOrCreateUser(userInfo: Map<String, Any>): CreateUserOperationResult {
@@ -32,32 +38,34 @@ class YandexAuthProvider(
         } ?: create(userInfo)
     }
 
-    private suspend fun create(userInfo: Map<String, Any>): CreateUserOperationResult {
+    private suspend fun create(userInfo: Map<String, Any>): CreateUserOperationResult = coroutineScope {
+
+        val countryId = async {countriesRepository.getByCode("ru").id }
+        val langId = async {  languagesRepository.getByCode("ru").id }
 
         val user = User(
-            id = 0,
             isVerified = false,
-            fullName = null,
-            username = "",
-            email = null,
-            avatar = null,
+            fullName = userInfo["real_name"] as? String ?: (userInfo["display_name"] as? String),
+            username = userInfo["login"] as String,
+            email = (userInfo["emails"] as List<String>).first(),
+            avatar = null, //todo:  Проставлять аватар
             bio = null,
             location = null,
             role = UserRole.USER,
             website = null,
-            countryId = 0,
-            languageId = 0,
+            countryId = countryId.await(),
+            languageId = langId.await(),
             telegramId = null,
             tonWalletId = null,
-            yandexId = null,
+            yandexId = userInfo["id"] as String,
             vkId = null,
-            isActive = false,
+            isActive = true,
             lastLoginAt = OffsetDateTime.now(),
             createdAt = OffsetDateTime.now(),
             updatedAt = OffsetDateTime.now()
         )
         val created = userRepository.create(user)
-        return CreateUserOperationResult(isCreated = true, user = created)
+        return@coroutineScope CreateUserOperationResult(isCreated = true, user = created)
     }
 
 

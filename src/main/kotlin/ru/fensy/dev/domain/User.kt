@@ -6,7 +6,7 @@ import java.time.OffsetDateTime
  * Пользователь
  */
 data class User(
-    val id: Long,
+    val id: Long? = null,
     val isVerified: Boolean,
     val fullName: String? = null,
     val username: String,

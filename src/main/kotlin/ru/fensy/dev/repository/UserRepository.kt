@@ -58,7 +58,7 @@ class UserRepository(
             .bind("avatar", user.avatar)
             .bind("bio", user.bio)
             .bind("location", user.location)
-            .bind("role", user.role)
+            .bind("role", user.role.name)
             .bind("website", user.website)
             .bind("telegramId", user.telegramId)
             .bind("tonWalletId", user.tonWalletId)

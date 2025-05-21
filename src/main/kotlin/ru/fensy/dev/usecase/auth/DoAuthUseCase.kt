@@ -2,6 +2,7 @@ package ru.fensy.dev.usecase.auth
 
 import graphql.schema.DataFetchingEnvironment
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.auth.provider.AuthProvider
 import ru.fensy.dev.graphql.controller.auth.response.AuthResponse
 
@@ -9,6 +10,7 @@ import ru.fensy.dev.graphql.controller.auth.response.AuthResponse
  * Выполнить авторизацию
  */
 @Component
+@Transactional
 class DoAuthUseCase(
     authProviders: List<AuthProvider>,
 ) {
@@ -22,7 +24,7 @@ class DoAuthUseCase(
 
         return providerByName[providerName]?.let { provider ->
             val authResult = provider.auth(accessToken)
-            AuthResponse(
+            return@let AuthResponse(
                 created = authResult.isUserCreated,
                 accessToken = authResult.bearerToken,
                 message = when (authResult.isUserCreated) {

@@ -14,11 +14,14 @@ class SecurityConfiguration {
 
     @Bean
     fun configure(http: ServerHttpSecurity): SecurityWebFilterChain {
-        return http.authorizeExchange { auth: AuthorizeExchangeSpec ->
-            auth
-                .pathMatchers("/test").authenticated()
-                .anyExchange().permitAll()
-        }
+        return http
+            .csrf { it.disable() }
+            .authorizeExchange { auth: AuthorizeExchangeSpec ->
+                auth
+                    .pathMatchers("/test").authenticated()
+                    .anyExchange().permitAll()
+
+            }
             .oauth2Login(Customizer.withDefaults())
             .build()
     }
