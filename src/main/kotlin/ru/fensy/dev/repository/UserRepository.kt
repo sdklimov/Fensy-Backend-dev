@@ -30,14 +30,47 @@ class UserRepository(
 
     suspend fun findByUsername(username: String): User? {
         return databaseClient
-            .sql("""
+            .sql(
+                """
                 select * from users where username = :username and is_active
-            """.trimIndent())
+            """.trimIndent()
+            )
             .bind("username", username)
             .fetch()
             .one()
             .map { of(it) }
             .awaitSingleOrNull()
+    }
+
+    suspend fun create(user: User): User {
+        return databaseClient
+            .sql(
+                """
+                insert into users(full_name, username, email, avatar, bio, location, role, website, telegram_id, ton_wallet_id, yandex_id, vk_id, is_active, country_id, language_id) 
+                values (:fullName, :username, :email, :avatar, :bio, :location, :role, :website, :telegramId, :tonWalletId, :yandexId, :vkId, :isActive, :countryId, :languageId)
+                on conflict (username) do nothing 
+                returning *
+            """.trimIndent()
+            )
+            .bind("fullName", user.fullName)
+            .bind("username", user.username)
+            .bind("email", user.email)
+            .bind("avatar", user.avatar)
+            .bind("bio", user.bio)
+            .bind("location", user.location)
+            .bind("role", user.role)
+            .bind("website", user.website)
+            .bind("telegramId", user.telegramId)
+            .bind("tonWalletId", user.tonWalletId)
+            .bind("yandexId", user.yandexId)
+            .bind("vkId", user.vkId)
+            .bind("isActive", user.isActive)
+            .bind("countryId", user.countryId)
+            .bind("languageId", user.languageId)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingle()
     }
 
     private fun of(source: Map<String, Any>) =

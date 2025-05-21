@@ -34,7 +34,7 @@ type Query {
 
 type Mutation {
     """ Регистрация/Авторизация пользователя через яндекс """
-    yandexOAuth2(accessToken: String!): AuthResponse!
+    auth(provider: String!, accessToken: String!): AuthResponse!
     """ Обновить токен доступа """
     refreshAccessToken: RefreshResponse!
     """ Выйти из аккаунта """

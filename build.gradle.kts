@@ -40,6 +40,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation("com.graphql-java:graphql-java-extended-scalars:21.0")
 
+    // security
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+    implementation("org.springframework.boot:spring-boot-starter-security:3.4.5")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")

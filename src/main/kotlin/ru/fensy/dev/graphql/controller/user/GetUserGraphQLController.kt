@@ -7,7 +7,7 @@ import ru.fensy.dev.graphql.controller.user.response.UserResponse
 import ru.fensy.dev.usecase.user.GetUserUsaCase
 
 @Controller
-class GetUserController(
+class GetUserGraphQLController(
     private val getUserUsaCase: GetUserUsaCase,
 ) {
 
