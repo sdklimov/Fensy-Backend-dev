@@ -30,7 +30,7 @@ class YandexAuthProvider(
             .getUserInfo(accessToken)
         val createUserResult = getOrCreateUser(userInfo)
 
-        return AuthResult(isUserCreated = createUserResult.isCreated, bearerToken = "Bearer aasdad......")
+        return AuthResult(isUserCreated = createUserResult.isCreated, user = createUserResult.user)
     }
 
     private suspend fun getOrCreateUser(userInfo: Map<String, Any>): CreateUserOperationResult {

@@ -21,7 +21,6 @@ application:
       collection: ${ALLOWED_PRODUCT_COUNT:5}
     pagination:
       page-size: ${POST_DEFAULT_PAGE_SIZE:10}
-
 spring:
   graphql:
     graphiql:
@@ -43,6 +42,10 @@ spring:
     user: ${application.datasource.username}
     password: ${application.datasource.password}
   security:
+    jwt:
+      private-key: file:${JWT_PRIVATE_KEY_PATH}
+      public-key: file:${JWT_PUBLIC_KEY_PATH}
+      ttl: ${JWT_TTL:15m}
     oauth2:
       user-info-uri:
         yandex: ${YANDEX_USER_INFO_URI:https://login.yandex.ru/info}

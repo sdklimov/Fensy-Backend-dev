@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.auth.provider.AuthProvider
 import ru.fensy.dev.graphql.controller.auth.response.AuthResponse
+import ru.fensy.dev.service.jwt.JwtService
 
 /**
  * Выполнить авторизацию
@@ -13,6 +14,7 @@ import ru.fensy.dev.graphql.controller.auth.response.AuthResponse
 @Transactional
 class DoAuthUseCase(
     authProviders: List<AuthProvider>,
+    private val jwtService: JwtService,
 ) {
 
     private val providerByName = authProviders.associateBy { it.name() }
@@ -26,7 +28,7 @@ class DoAuthUseCase(
             val authResult = provider.auth(accessToken)
             return@let AuthResponse(
                 created = authResult.isUserCreated,
-                accessToken = authResult.bearerToken,
+                accessToken = jwtService.generateToken(authResult.user.username),
                 message = when (authResult.isUserCreated) {
                     true -> "Пользователь успешно зарегистрирован"
                     false -> "Пользователь успешно авторизован"
