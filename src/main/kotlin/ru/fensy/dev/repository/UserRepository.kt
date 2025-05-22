@@ -1,6 +1,8 @@
 package ru.fensy.dev.repository
 
+import java.nio.ByteBuffer
 import java.time.OffsetDateTime
+import java.util.Base64
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.r2dbc.core.DatabaseClient
@@ -55,7 +57,7 @@ class UserRepository(
             .bind("fullName", user.fullName)
             .bind("username", user.username)
             .bind("email", user.email)
-            .bind("avatar", user.avatar)
+            .bind("avatar", Base64.getDecoder().decode(user.avatar))
             .bind("bio", user.bio)
             .bind("location", user.location)
             .bind("role", user.role.name)
@@ -75,13 +77,22 @@ class UserRepository(
 
     private fun of(source: Map<String, Any>) =
         source.let {
+
+
+            val avatar = (it["avatar"] as? ByteBuffer)
+                ?.let { bf ->
+                    val byteArray = ByteArray(bf.capacity())
+                    bf.get(byteArray)
+                    Base64.getEncoder().encodeToString(byteArray)
+                }
+
             User(
                 id = it["id"] as Long,
                 isVerified = it["is_verified"] as Boolean,
                 fullName = it["full_name"] as? String,
                 username = it["username"] as String,
                 email = it["email"] as? String,
-                avatar = it["avatar"] as? ByteArray,
+                avatar = avatar,
                 bio = it["bio"] as? String,
                 location = it["location"] as? String,
                 role = UserRole.valueOf(it["role"] as String),

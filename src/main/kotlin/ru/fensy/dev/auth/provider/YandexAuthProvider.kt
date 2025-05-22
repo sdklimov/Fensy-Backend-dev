@@ -1,6 +1,7 @@
 package ru.fensy.dev.auth.provider
 
 import java.time.OffsetDateTime
+import java.util.Base64
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Component
@@ -11,6 +12,7 @@ import ru.fensy.dev.repository.CountriesRepository
 import ru.fensy.dev.repository.LanguagesRepository
 import ru.fensy.dev.repository.UserRepository
 import ru.fensy.dev.service.YandexUserInfoProxyService
+import ru.fensy.dev.service.avatar.DefaultAvatarService
 
 @Component
 class YandexAuthProvider(
@@ -18,6 +20,7 @@ class YandexAuthProvider(
     private val userRepository: UserRepository,
     private val countriesRepository: CountriesRepository, //todo: Вынести в сервис с ленивой загрузкой (кеш)
     private val languagesRepository: LanguagesRepository, //todo: Вынести в сервис с ленивой загрузкой (кеш)
+    private val defaultAvatarService: DefaultAvatarService,
 ) : AuthProvider {
 
     override fun name(): String = PROVIDER_NAME
@@ -43,12 +46,14 @@ class YandexAuthProvider(
         val countryId = async {countriesRepository.getByCode("ru").id }
         val langId = async {  languagesRepository.getByCode("ru").id }
 
+        val avatar = Base64.getEncoder().encodeToString(defaultAvatarService.getRandomAvatar())
+
         val user = User(
             isVerified = false,
             fullName = userInfo["real_name"] as? String ?: (userInfo["display_name"] as? String),
             username = userInfo["login"] as String,
             email = (userInfo["emails"] as List<String>).first(),
-            avatar = null, //todo:  Проставлять аватар
+            avatar = avatar,
             bio = null,
             location = null,
             role = UserRole.USER,
