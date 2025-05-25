@@ -6,6 +6,7 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
+import ru.fensy.dev.constants.USER_HTTP_HEADERS
 
 @Component
 class SetRequestHeadersToContextWebFilter(
@@ -18,7 +19,7 @@ class SetRequestHeadersToContextWebFilter(
             .flatMap {
                 chain.filter(exchange)
                     .contextWrite { context ->
-                        context.put("requestHeaders", it)
+                        context.put(USER_HTTP_HEADERS, it)
                     }
             }
             .then()

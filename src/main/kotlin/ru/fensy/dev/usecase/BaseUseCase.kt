@@ -1,9 +1,12 @@
 package ru.fensy.dev.usecase
 
 import jakarta.annotation.Nullable
+import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.springframework.http.HttpHeaders
 import reactor.core.publisher.Mono
 import ru.fensy.dev.constants.CURRENT_USER_CONTEXT_KEY
+import ru.fensy.dev.constants.USER_HTTP_HEADERS
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.exception.UserNotExistsInContextException
 
@@ -22,6 +25,13 @@ open class BaseUseCase {
                 throw USER_NOT_EXISTS_IN_CONTEXT_EXCEPTION
             } else userNullable
         }
+    }
+
+    @Nullable
+    suspend fun getHeaders(): HttpHeaders {
+        return Mono.deferContextual { ctx ->
+            Mono.just(ctx.get<HttpHeaders>(USER_HTTP_HEADERS))
+        }.awaitSingle()
     }
 
     companion object {
