@@ -1,8 +1,12 @@
 package ru.fensy.dev.usecase.auth
 
 import graphql.schema.DataFetchingEnvironment
+import org.springframework.http.ResponseCookie
+import org.springframework.http.ResponseCookie.ResponseCookieBuilder
+import org.springframework.http.server.ServerHttpResponse
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.server.ServerWebExchange
 import ru.fensy.dev.auth.provider.AuthProvider
 import ru.fensy.dev.graphql.controller.auth.response.AuthResponse
 import ru.fensy.dev.service.jwt.JwtService
@@ -26,9 +30,20 @@ class DoAuthUseCase(
 
         return providerByName[providerName]?.let { provider ->
             val authResult = provider.auth(accessToken)
+            val tokenRs = jwtService.generateToken(authResult.user)
+
+            env.graphQlContext.get<ServerWebExchange>(ServerWebExchange::class.java)
+                .response
+                .addCookie(
+                    ResponseCookie.from("refreshToken", tokenRs.refresh)
+                        .secure(true)
+                        .httpOnly(true)
+                        .build()
+                )
+
             return@let AuthResponse(
                 created = authResult.isUserCreated,
-                accessToken = jwtService.generateToken(authResult.user.username),
+                accessToken = tokenRs.jwt,
                 message = when (authResult.isUserCreated) {
                     true -> "Пользователь успешно зарегистрирован"
                     false -> "Пользователь успешно авторизован"

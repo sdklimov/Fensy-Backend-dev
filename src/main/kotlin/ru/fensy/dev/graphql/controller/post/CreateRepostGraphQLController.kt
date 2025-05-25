@@ -14,7 +14,7 @@ class CreateRepostGraphQLController(
 ) {
 
     @MutationMapping("createRepost")
-    suspend fun createPost(
+    suspend fun createRepost(
         @Argument input: CreateRepostInput,
     ): PostResponse =
         createPostUseCase.execute(

@@ -13,7 +13,7 @@ class UpdatePostGraphQLController(
 ) {
 
     @MutationMapping("updatePost")
-    suspend fun createPost(
+    suspend fun updatePost(
         @Argument input: UpdatePostInput,
     ): PostResponse {
         return updatePostUseCase.execute(input)

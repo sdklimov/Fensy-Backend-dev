@@ -22,3 +22,4 @@ databaseChangeLog:
   - include: { relativeToChangelogFile: true, file: create-post-views-table.sql }
   - include: { relativeToChangelogFile: true, file: create-comments-table.sql }
   - include: { relativeToChangelogFile: true, file: create-comment-likes-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-refresh-token-table.sql }

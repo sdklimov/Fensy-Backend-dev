@@ -2,25 +2,45 @@ package ru.fensy.dev.service.jwt
 
 import java.time.Duration
 import java.time.Instant
+import java.util.UUID
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtClaimsSet
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters
+import ru.fensy.dev.domain.User
+import ru.fensy.dev.extension.sha256
+import ru.fensy.dev.repository.RefreshTokenRepository
 
 class JwtService(
     private val issuer: String,
     private val ttl: Duration,
     private val jwtEncoder: JwtEncoder,
     private val jwtDecoder: JwtDecoder,
+    private val refreshTokenRepository: RefreshTokenRepository,
 ) {
-    fun generateToken(username: String): String {
+    suspend fun generateToken(user: User): GenerateTokenOperationRs {
+
+        val jti = UUID.randomUUID().toString()
+        val refreshToken = UUID.randomUUID().toString()
+
         val claimsSet = JwtClaimsSet.builder()
-            .subject(username)
+            .subject(user.username)
             .issuer(issuer)
+            .claim(JTI_CLAIM_NAME, jti)
             .expiresAt(Instant.now().plus(ttl))
             .build()
-        return "Bearer ${jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).tokenValue}"
+
+        val jwt = "Bearer ${jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).tokenValue}"
+
+        refreshTokenRepository.save(
+            userId = user.id!!,
+            tokenHash = refreshToken.sha256(),
+            jwtId = jti,
+            expiresAt = ttl.plus(REFRESH_TOKEN_DURATION)
+        )
+
+        return GenerateTokenOperationRs(jwt = jwt, refresh = refreshToken)
     }
 
     fun validateToken(token: String): Jwt {
@@ -29,5 +49,13 @@ class JwtService(
 
     companion object {
         private const val BEARER_SUBSTRING_INDEX = "Bearer".length + 1
+        private const val JTI_CLAIM_NAME = "jti"
+        private val REFRESH_TOKEN_DURATION = Duration.ofMinutes(2)
     }
 }
+
+data class GenerateTokenOperationRs(
+    val jwt: String,
+    val refresh: String,
+)
+

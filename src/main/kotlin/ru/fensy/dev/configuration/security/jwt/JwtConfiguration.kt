@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
+import ru.fensy.dev.repository.RefreshTokenRepository
 import ru.fensy.dev.service.jwt.JwtService
 
 
@@ -41,7 +42,14 @@ class JwtConfiguration(
         appName: String,
         jwtEncoder: JwtEncoder,
         jwtDecoder: JwtDecoder,
-    ): JwtService = JwtService(issuer = appName, ttl = properties.ttl, jwtEncoder = jwtEncoder, jwtDecoder = jwtDecoder)
+        refreshTokenRepository: RefreshTokenRepository,
+    ): JwtService = JwtService(
+        issuer = appName,
+        ttl = properties.ttl,
+        jwtEncoder = jwtEncoder,
+        jwtDecoder = jwtDecoder,
+        refreshTokenRepository = refreshTokenRepository
+    )
 
 
 }

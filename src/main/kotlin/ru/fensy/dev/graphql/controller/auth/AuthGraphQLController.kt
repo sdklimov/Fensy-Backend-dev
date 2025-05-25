@@ -16,8 +16,7 @@ class AuthGraphQLController(
 
     @MutationMapping("auth")
     suspend fun auth(env: DataFetchingEnvironment): AuthResponse {
-        val result =  authUseCase.execute(env)
-        return result
+        return authUseCase.execute(env)
     }
 
 }
