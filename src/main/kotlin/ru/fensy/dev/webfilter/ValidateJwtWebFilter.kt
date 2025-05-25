@@ -111,7 +111,7 @@ class ValidateJwtWebFilter(
     }
 
     companion object {
-        private val ALLOW_ALL_OPERATIONS = listOf("getAllUserPosts", "auth").toHashSet()
+        private val ALLOW_ALL_OPERATIONS = listOf("getAllUserPosts", "auth", "__schema").toHashSet()
     }
 
 }
