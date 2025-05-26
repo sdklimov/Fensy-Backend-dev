@@ -32,6 +32,11 @@ class ValidateJwtWebFilter(
         return Mono.defer {
             val request = exchange.request
             val path = request.path.toString()
+
+            if (path.startsWith("/webjars") || path.startsWith("/.well-known/") || path.startsWith("/v3/api-docs")) {
+                return@defer chain.filter(exchange)
+            }
+
             if (path != "/gql" && AUTH_REQUIRED_OPERATIONS.contains(path)) {
                 val userName = kotlin.runCatching {
                     val jwt = request.headers.getFirst(HttpHeaders.AUTHORIZATION)!!
@@ -137,6 +142,7 @@ class ValidateJwtWebFilter(
             "deactivateUser", "updateUserSettings", "setInterestsToUser", "updateUserProfile",
             "createCollection", "deleteCollection"
         ).toHashSet()
+
     }
 
 }

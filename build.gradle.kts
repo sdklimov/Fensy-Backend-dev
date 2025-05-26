@@ -45,7 +45,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security:3.4.5")
 
     // swagger
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.8")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

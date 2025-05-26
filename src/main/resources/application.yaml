@@ -74,8 +74,10 @@ logging:
 
 springdoc:
   swagger-ui:
-    path: /swagger-ui.html
-    operationsSorter: method
-    tagsSorter: alpha
+    path: /doc-api
+    disable-swagger-default-url: true
+    default-model-expand-depth: 0
+    default-models-expand-depth: 0
+  pre-loading-enabled: true
   api-docs:
-    path: /v3/api-docs
+    path: /v3/api-docs/user-profile
