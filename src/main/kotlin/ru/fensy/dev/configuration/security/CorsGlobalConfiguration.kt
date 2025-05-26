@@ -14,7 +14,8 @@ class CorsGlobalConfiguration : WebFluxConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry
             .addMapping("/**")
-            .allowedOrigins("https://fsy.app/**", "http://fsy.app/**")
-            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+            .allowedOrigins("https://fsy.app/", "http://fsy.app/")
+            .allowedMethods("*")
+            .allowedHeaders("*")
     }
 }
