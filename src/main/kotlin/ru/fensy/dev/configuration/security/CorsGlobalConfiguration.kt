@@ -15,11 +15,12 @@ class CorsGlobalConfiguration : WebFluxConfigurer {
         registry
             .addMapping("/**")
             .allowedOrigins(
-                "https://fsy.app/",
-                "http://fsy.app/",
-                "https://x-social-wheat.vercel.app/"
+                "https://fsy.app",
+                "http://fsy.app",
+                "https://x-social-wheat.vercel.app"
             )
             .allowedMethods("*")
             .allowedHeaders("*")
+            .allowCredentials(true)
     }
 }
