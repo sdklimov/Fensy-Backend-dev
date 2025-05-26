@@ -44,7 +44,7 @@ class ValidateJwtWebFilter(
                     val query = json["query"].asText()
                     val requestOperationName = extractOperationName(query)
 
-                    if (ALLOW_ALL_OPERATIONS.contains(requestOperationName)) {
+                    if (!AUTH_REQUIRED_OPERATIONS.contains(requestOperationName)) {
                         chain.filter(restoreBody(bodyBytes, exchange))
                     } else {
                         val userName = kotlin.runCatching {
@@ -111,7 +111,11 @@ class ValidateJwtWebFilter(
     }
 
     companion object {
-        private val ALLOW_ALL_OPERATIONS = listOf("getAllUserPosts", "auth", "__schema").toHashSet()
+        private val AUTH_REQUIRED_OPERATIONS = listOf(
+            "createRepost", "createPost", "updatePost", "getAllCountries",
+            "deactivateUser", "updateUserSettings", "setInterestsToUser", "updateUserProfile",
+            "createCollection", "deleteCollection"
+        ).toHashSet()
     }
 
 }
