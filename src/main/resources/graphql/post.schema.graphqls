@@ -67,8 +67,9 @@ input CreatedPost {
     content: String!
     allowViewingFor: PostAllowViewingFor!
     pinned: Boolean
+    fileSessionId: String
     tags: [String]
-    attachments: [Upload]
+    attachments: [String]
     parsedLinks: [CreatedParsedLink]
     interestIds: [ID!]!
     collectionIds: [ID]

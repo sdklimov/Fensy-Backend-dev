@@ -71,3 +71,11 @@ logging:
     org.springframework.r2dbc: ${R2DBC_LOGGING_LEVEL:DEBUG}
     io.r2dbc.postgresql.QUERY: ${POSTGRESQL_QUERY_LOGGING_LEVEL:DEBUG}
     io.r2dbc.postgresql.PARAM: ${POSTGRESQL_PARAM_LOGGING_LEVEL:DEBUG}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  api-docs:
+    path: /v3/api-docs

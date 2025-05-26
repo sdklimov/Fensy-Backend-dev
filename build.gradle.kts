@@ -44,6 +44,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     implementation("org.springframework.boot:spring-boot-starter-security:3.4.5")
 
+    // swagger
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.8")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")

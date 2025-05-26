@@ -31,7 +31,8 @@ class ValidateJwtWebFilter(
     override fun filter(exchange: ServerWebExchange, chain: WebFilterChain): Mono<Void> {
         return Mono.defer {
             val request = exchange.request
-            if (request.path.toString() != "/gql") {
+            val path = request.path.toString()
+            if (path != "/gql" && AUTH_REQUIRED_OPERATIONS.contains(path)) {
                 val userName = kotlin.runCatching {
                     val jwt = request.headers.getFirst(HttpHeaders.AUTHORIZATION)!!
                     val validJwt = jwtService.validateToken(jwt)

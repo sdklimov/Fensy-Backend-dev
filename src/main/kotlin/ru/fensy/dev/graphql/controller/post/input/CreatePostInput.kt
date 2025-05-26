@@ -8,8 +8,9 @@ data class CreatePostInput(
     val allowViewingFor: PostAllowVieweingFor,
     val pinned: Boolean = false,
     val tags: List<String> = emptyList(),
-//    val attachments: List<FilePart>? = emptyList(),
+    val attachments: List<String>? = emptyList(),
+    val fileSessionId: String? = null,
     val parsedLinks: List<CreatedParsedLink>? = emptyList(),
     val interestIds: List<Long>,
     val collectionIds: List<Long>,
-    )
+)

@@ -1,5 +1,6 @@
 package ru.fensy.dev.graphql.controller.post
 
+import java.util.UUID
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
 import org.springframework.stereotype.Controller
@@ -27,7 +28,8 @@ class CreateRepostGraphQLController(
                 tags = input.tags,
                 parsedLinks = input.parsedLinks,
                 interestIds = input.interestIds,
-                collectionIds = input.collectionIds
+                collectionIds = input.collectionIds,
+                fileSessionId = input.fileSessionId?.let { UUID.fromString(it) },
             )
         )
 
