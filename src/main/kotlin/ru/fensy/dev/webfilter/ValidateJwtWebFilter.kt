@@ -32,7 +32,27 @@ class ValidateJwtWebFilter(
         return Mono.defer {
             val request = exchange.request
             if (request.path.toString() != "/gql") {
-                return@defer chain.filter(exchange)
+                val userName = kotlin.runCatching {
+                    val jwt = request.headers.getFirst(HttpHeaders.AUTHORIZATION)!!
+                    val validJwt = jwtService.validateToken(jwt)
+                    validJwt.claims["sub"] as String
+                }.fold(
+                    onSuccess = { it },
+                    onFailure = {
+                        logger.error(it) { "Ошибка валидации JWT" }
+                        exchange.response.statusCode = HttpStatus.UNAUTHORIZED
+                        return@defer exchange.response.setComplete()
+                    }
+                )
+
+                return@defer mono {
+                    userRepository.findByUsername(userName)
+                }.flatMap { user ->
+                    chain.filter(exchange)
+                        .contextWrite { context ->
+                            context.put(CURRENT_USER_CONTEXT_KEY, user)
+                        }
+                }
             }
             return@defer DataBufferUtils.join(request.body)
                 .flatMap { dataBuffer ->

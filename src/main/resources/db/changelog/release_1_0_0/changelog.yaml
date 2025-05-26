@@ -23,3 +23,5 @@ databaseChangeLog:
   - include: { relativeToChangelogFile: true, file: create-comments-table.sql }
   - include: { relativeToChangelogFile: true, file: create-comment-likes-table.sql }
   - include: { relativeToChangelogFile: true, file: create-refresh-token-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-file-upload-session-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-file-upload-session-to-file-table.sql }
