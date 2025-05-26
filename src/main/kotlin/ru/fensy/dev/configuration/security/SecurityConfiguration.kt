@@ -20,7 +20,9 @@ class SecurityConfiguration {
     fun configure(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
             .csrf { it.disable() }
-            .cors { it.disable()}
+            .cors(Customizer.withDefaults())
+            .formLogin { it.disable() }
+            .logout { it.disable() }
             .authorizeExchange { auth: AuthorizeExchangeSpec ->
                 auth
                     .anyExchange().permitAll()
