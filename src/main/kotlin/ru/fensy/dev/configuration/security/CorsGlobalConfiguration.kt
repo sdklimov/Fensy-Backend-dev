@@ -6,9 +6,9 @@ import org.springframework.web.reactive.config.CorsRegistry
 import org.springframework.web.reactive.config.EnableWebFlux
 import org.springframework.web.reactive.config.WebFluxConfigurer
 
-@Configuration
-@Profile("!local")
-@EnableWebFlux
+//@Configuration
+//@Profile("!local")
+//@EnableWebFlux
 class CorsGlobalConfiguration : WebFluxConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
