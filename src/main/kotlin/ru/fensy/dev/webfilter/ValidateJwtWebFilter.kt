@@ -33,7 +33,8 @@ class ValidateJwtWebFilter(
             val request = exchange.request
             val path = request.path.toString()
 
-            if (path.startsWith("/webjars") || path.startsWith("/.well-known/") || path.startsWith("/v3/api-docs")) {
+            if (path.startsWith("/webjars") || path.startsWith("/.well-known/")
+                || path.startsWith("/v3/api-docs") || path == "/doc-api") {
                 return@defer chain.filter(exchange)
             }
 
