@@ -47,6 +47,10 @@ dependencies {
     // swagger
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0")
 
+    // aws
+    compileOnly("software.amazon.awssdk:aws-sdk-java:2.31.50")
+    implementation("software.amazon.awssdk:netty-nio-client:2.31.50")
+
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")

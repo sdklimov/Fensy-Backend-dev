@@ -28,11 +28,12 @@ class FileUploadSessionRepository(
             .map { it["id"] as UUID }
             .awaitSingle()
 
-    suspend fun getByIdAndUserId(id: UUID, userId: Long): SessionQueryData? {
+    suspend fun getActiveSessionByIdAndUserId(id: UUID, userId: Long): SessionQueryData? {
         return databaseClient
             .sql(
                 """
-                select id,  user_id, expired_at from file_upload_session where  expired_at > now()
+                select id,  user_id, is_closed, expired_at 
+                from file_upload_session where  expired_at > now() and not is_closed
                 and id = :id and user_id = :userId
             """.trimIndent()
             )
@@ -42,6 +43,16 @@ class FileUploadSessionRepository(
             .one()
             .map { map(it) }
             .awaitSingleOrNull()
+    }
+
+    suspend fun closeSession(sessionId: UUID){
+        databaseClient
+            .sql("""
+                update file_upload_session set is_closed = true where id = :sessionId
+            """.trimIndent())
+            .bind("sessionId", sessionId)
+            .fetch()
+            .awaitRowsUpdated()
     }
 
     suspend fun addFileToSession(sessionId: UUID, fileId: UUID) {
@@ -60,6 +71,7 @@ class FileUploadSessionRepository(
             id = it["id"] as UUID,
             userId = it["user_id"] as Long,
             expiredAt = (it["expired_at"] as OffsetDateTime).withOffsetSameInstant(ZoneOffset.UTC),
+            isClosed = it["is_closed"] as Boolean,
         )
     }
 

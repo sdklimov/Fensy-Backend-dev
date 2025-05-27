@@ -16,6 +16,7 @@ import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.fensy.dev.constants.CURRENT_USER_CONTEXT_KEY
+import ru.fensy.dev.exception.UserNotFoundException
 import ru.fensy.dev.repository.UserRepository
 import ru.fensy.dev.service.jwt.JwtService
 
@@ -33,12 +34,12 @@ class ValidateJwtWebFilter(
             val request = exchange.request
             val path = request.path.toString()
 
-            if (path.startsWith("/webjars") || path.startsWith("/.well-known/")
-                || path.startsWith("/v3/api-docs") || path == "/doc-api") {
+            if (SWAGGER_PATHS.any { path.startsWith(it) }) {
                 return@defer chain.filter(exchange)
             }
 
-            if (path != "/gql" && AUTH_REQUIRED_OPERATIONS.contains(path)) {
+            // для REST всегда нужен пользак
+            if (path != "/gql") {
                 val userName = kotlin.runCatching {
                     val jwt = request.headers.getFirst(HttpHeaders.AUTHORIZATION)!!
                     val validJwt = jwtService.validateToken(jwt)
@@ -53,7 +54,9 @@ class ValidateJwtWebFilter(
                 )
 
                 return@defer mono {
-                    userRepository.findByUsername(userName)
+                    val user = userRepository.findByUsername(userName)
+                        ?: throw UserNotFoundException("Пользователь [$userName] не найден")
+                    user
                 }.flatMap { user ->
                     chain.filter(exchange)
                         .contextWrite { context ->
@@ -143,6 +146,10 @@ class ValidateJwtWebFilter(
             "deactivateUser", "updateUserSettings", "setInterestsToUser", "updateUserProfile",
             "createCollection", "deleteCollection"
         ).toHashSet()
+
+        private val SWAGGER_PATHS = listOf(
+            "/webjars", "/.well-known/", "/v3/api-docs", "/doc-api"
+        )
 
     }
 

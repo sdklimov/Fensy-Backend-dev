@@ -6,5 +6,6 @@ import java.util.UUID
 data class SessionQueryData(
     val id: UUID,
     val userId: Long,
+    val isClosed: Boolean,
     val expiredAt: OffsetDateTime,
 )
