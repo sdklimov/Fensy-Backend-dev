@@ -45,11 +45,13 @@ class FileUploadSessionRepository(
             .awaitSingleOrNull()
     }
 
-    suspend fun closeSession(sessionId: UUID){
+    suspend fun closeSession(sessionId: UUID) {
         databaseClient
-            .sql("""
+            .sql(
+                """
                 update file_upload_session set is_closed = true where id = :sessionId
-            """.trimIndent())
+            """.trimIndent()
+            )
             .bind("sessionId", sessionId)
             .fetch()
             .awaitRowsUpdated()
@@ -57,13 +59,31 @@ class FileUploadSessionRepository(
 
     suspend fun addFileToSession(sessionId: UUID, fileId: UUID) {
         databaseClient
-            .sql("""
+            .sql(
+                """
                 insert into file_upload_session_to_file (session_id, file_id) values (:sessionId, :fileId)
-            """.trimIndent())
+            """.trimIndent()
+            )
             .bind("sessionId", sessionId)
             .bind("fileId", fileId)
             .fetch()
             .awaitRowsUpdated()
+    }
+
+    suspend fun getSessionFiles(sessionId: UUID): List<UUID> {
+        return databaseClient
+            .sql(
+                """
+                select file_id from file_upload_session_to_file
+                where session_id = :sessionId
+            """.trimIndent()
+            )
+            .bind("sessionId", sessionId)
+            .fetch()
+            .all()
+            .map { it["file_id"] as UUID }
+            .collectList()
+            .awaitSingle()
     }
 
     private fun map(source: Map<String, Any>) = source.let {

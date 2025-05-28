@@ -1,14 +1,17 @@
 package ru.fensy.dev.usecase.post
 
+import java.util.UUID
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import ru.fensy.dev.exception.FileUploadSessionNotExistsException
 import ru.fensy.dev.file.FilePersister
 import ru.fensy.dev.graphql.controller.post.response.PostResponse
 import ru.fensy.dev.repository.CollectionRepository
+import ru.fensy.dev.repository.FileUploadSessionRepository
 import ru.fensy.dev.repository.InterestsRepository
 import ru.fensy.dev.repository.ParsedLinkRepository
 import ru.fensy.dev.repository.PostAttachmentRepository
@@ -36,6 +39,7 @@ class CreatePostUseCase(
     private val collectionRepository: CollectionRepository,
     private val filePersister: FilePersister,
     private val postAttachmentRepository: PostAttachmentRepository,
+    private val fileUploadSessionRepository: FileUploadSessionRepository,
 ) : BaseUseCase() {
 
     suspend fun execute(input: CreatePostOperationRq): PostResponse = coroutineScope {
@@ -62,6 +66,11 @@ class CreatePostUseCase(
             async { createTags(createdPost.id, input) },
             async { processParsedLinks(createdPost.id, input) },
             async { processCollections(createdPost.id, input) },
+            async {
+                input.fileSessionId?.let {
+                    processAttachments(createdPost.id, it, currentUserId)
+                } ?: Unit
+            }
         )
 
         deferred.awaitAll()
@@ -102,6 +111,24 @@ class CreatePostUseCase(
                 parsedLinkRepository.addParsedLinkToInterest(parsedLinkId, parsedLinkId)
             }
 
+    }
+
+    private suspend fun processAttachments(
+        createdPostId: Long,
+        fileSessionId: UUID,
+        userId: Long,
+    ) {
+        val session = fileUploadSessionRepository.getActiveSessionByIdAndUserId(fileSessionId, userId)
+            ?: throw FileUploadSessionNotExistsException("Сессия не обнаружена")
+
+        val files = fileUploadSessionRepository.getSessionFiles(session.id)
+        files.takeIf {
+            it.isNotEmpty()
+        }
+            ?.let { fileIds ->
+                postAttachmentRepository.savePostAttachments(createdPostId, fileIds)
+            }
+        fileUploadSessionRepository.closeSession(sessionId = session.id)
     }
 
     private suspend fun processCollections(postId: Long, input: CreatePostOperationRq) {

@@ -1,7 +1,6 @@
 package ru.fensy.dev.usecase.file
 
 import java.util.UUID
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.stereotype.Component
@@ -10,7 +9,6 @@ import reactor.core.publisher.Flux
 import ru.fensy.dev.exception.FileUploadSessionNotExistsException
 import ru.fensy.dev.proxy.S3FileStorageProxyService
 import ru.fensy.dev.repository.FileUploadSessionRepository
-import ru.fensy.dev.repository.PostAttachmentRepository
 import ru.fensy.dev.rest.UploadFileResponse
 import ru.fensy.dev.usecase.BaseUseCase
 
@@ -19,7 +17,6 @@ import ru.fensy.dev.usecase.BaseUseCase
 class UploadFileUseCase(
     private val s3FileStorageProxyService: S3FileStorageProxyService,
     private val fileUploadSessionRepository: FileUploadSessionRepository,
-    private val attachmentRepository: PostAttachmentRepository,
 ) : BaseUseCase() {
 
     suspend fun execute(

@@ -21,6 +21,14 @@ application:
       collection: ${ALLOWED_PRODUCT_COUNT:5}
     pagination:
       page-size: ${POST_DEFAULT_PAGE_SIZE:10}
+  file-storage:
+    s3:
+      bucket-name: ${S3_BUCKET_NAME:fansy-storage}
+      endpoint: ${S3_ENDPOINT:https://storage.yandexcloud.net}
+      region: ${S3_REGION:ru-central1}
+      key-id: ${S3_KEY_ID:}
+      key-secret: ${S3_KEY_SECRET:}
+
 spring:
   graphql:
     graphiql:

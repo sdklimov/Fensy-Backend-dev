@@ -10,15 +10,14 @@ class PostAttachmentRepository(
     private val databaseClient: DatabaseClient,
 ) {
 
-    suspend fun savePostAttachment(postId: Long, fileId: UUID) {
+    suspend fun savePostAttachments(postId: Long, fileIds: List<UUID>) {
+        val values = fileIds.joinToString(", ") { "($postId, '$it')" }
         databaseClient
             .sql(
                 """
-                insert into post_attachments (post_id, file_path) values (:postId, :fileId)
+                insert into post_attachments (post_id, file_id) values $values
             """.trimIndent()
             )
-            .bind("postId", postId)
-            .bind("fileId", fileId)
             .fetch()
             .awaitRowsUpdated()
     }
