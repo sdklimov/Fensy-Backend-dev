@@ -24,11 +24,12 @@ class UploadFileUseCase(
         contentType: String,
         contentLength: Long,
         file: Flux<DataBuffer>,
+        fileName: String,
     ): UploadFileResponse = coroutineScope {
         fileUploadSessionRepository.getActiveSessionByIdAndUserId(sessionId, currentUser(required = true)!!.id!!)
             ?: throw FileUploadSessionNotExistsException("Сессия не обнаружена")
 
-        val fileId = s3FileStorageProxyService.uploadFile(contentType, contentLength, file)
+        val fileId = s3FileStorageProxyService.uploadFile(contentType, contentLength, file, fileName)
 
         fileUploadSessionRepository.addFileToSession(sessionId, fileId)
 

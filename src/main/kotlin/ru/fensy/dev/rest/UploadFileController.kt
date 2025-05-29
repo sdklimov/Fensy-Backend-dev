@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ServerWebExchange
 import ru.fensy.dev.constants.X_FILE_CONTENT_LENGTH_HEADER_NAME
 import ru.fensy.dev.constants.X_FILE_CONTENT_TYPE_HEADER_NAME
+import ru.fensy.dev.constants.X_FILE_NAME_HEADER_NAME
 import ru.fensy.dev.usecase.file.UploadFileUseCase
 
 @RestController
@@ -24,6 +25,7 @@ class UploadFileController(
         @PathVariable("sessionId") sessionId: UUID,
         @RequestHeader(X_FILE_CONTENT_TYPE_HEADER_NAME, required = true) contentType: String,
         @RequestHeader(X_FILE_CONTENT_LENGTH_HEADER_NAME, required = true) contentLength: Long,
+        @RequestHeader(X_FILE_NAME_HEADER_NAME, required = true) fileName: String,
         serverWebExchange: ServerWebExchange,
     ): UploadFileResponse {
         val fileBody = serverWebExchange
@@ -37,7 +39,8 @@ class UploadFileController(
             sessionId = sessionId,
             contentType = contentType,
             contentLength = contentLength,
-            file = fileBody
+            file = fileBody,
+            fileName = fileName,
         )
     }
 

@@ -9,7 +9,11 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import ru.fensy.dev.configuration.s3.S3ClientConfigurationProperties
 import software.amazon.awssdk.core.async.AsyncRequestBody
+import software.amazon.awssdk.core.async.AsyncResponseTransformer
+import software.amazon.awssdk.core.async.ResponsePublisher
 import software.amazon.awssdk.services.s3.S3AsyncClient
+import software.amazon.awssdk.services.s3.model.GetObjectRequest
+import software.amazon.awssdk.services.s3.model.GetObjectResponse
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
 
 @Service
@@ -18,7 +22,7 @@ class S3FileStorageProxyService(
     private val properties: S3ClientConfigurationProperties,
 ) {
 
-    suspend fun uploadFile(contentType: String, contentLength: Long, file: Flux<DataBuffer>): UUID {
+    suspend fun uploadFile(contentType: String, contentLength: Long, file: Flux<DataBuffer>, fileName: String): UUID {
         val byteBufferFlux = file.transform { flux ->
             flux.map { dataBuffer ->
                 try {
@@ -36,6 +40,7 @@ class S3FileStorageProxyService(
                 PutObjectRequest.builder()
                     .bucket(properties.bucketName)
                     .key(fileKey.toString())
+                    .metadata(mapOf("fileName" to fileName))
                     .contentLength(contentLength)
                     .contentType(contentType)
                     .build(),
@@ -44,6 +49,21 @@ class S3FileStorageProxyService(
         ).awaitSingle()
 
         return fileKey
+    }
+
+    suspend fun downloadFile(fileId: UUID): ResponsePublisher<GetObjectResponse>? {
+         return  Mono.fromFuture(
+                s3Client.getObject(
+                    GetObjectRequest.builder()
+                        .bucket(properties.bucketName)
+                        .key(fileId.toString()).build(),
+                    AsyncResponseTransformer.toPublisher()
+                )
+                    .thenApply { responsePublisher -> responsePublisher }
+                    .toCompletableFuture()
+            ).awaitSingle()
+
+
     }
 
 }
