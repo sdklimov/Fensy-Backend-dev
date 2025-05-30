@@ -7,6 +7,7 @@ import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.http.HttpHeaders
 import reactor.core.publisher.Mono
 import ru.fensy.dev.constants.CURRENT_USER_CONTEXT_KEY
+import ru.fensy.dev.constants.JWT_CLAIMS
 import ru.fensy.dev.constants.REQUEST_HTTP_HEADERS
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.exception.UserNotExistsInContextException
@@ -35,6 +36,10 @@ open class BaseUseCase {
             Mono.just(ctx.get<HttpHeaders>(REQUEST_HTTP_HEADERS))
         }.awaitSingle()
     }
+
+    suspend fun getJwtClaims(): Map<String, Any> = Mono.deferContextual { ctx ->
+        Mono.just(ctx.get<Map<String, Any>>(JWT_CLAIMS))
+    }.awaitSingle()
 
     companion object {
         private val USER_NOT_EXISTS_IN_CONTEXT_EXCEPTION =

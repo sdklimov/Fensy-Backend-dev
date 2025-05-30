@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters
+import ru.fensy.dev.constants.JTI_CLAIM_NAME
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.extension.sha256
 import ru.fensy.dev.repository.RefreshTokenRepository
@@ -49,7 +50,6 @@ class JwtService(
 
     companion object {
         private const val BEARER_SUBSTRING_INDEX = "Bearer".length + 1
-        private const val JTI_CLAIM_NAME = "jti"
         private val REFRESH_TOKEN_DURATION = Duration.ofMinutes(2)
     }
 }

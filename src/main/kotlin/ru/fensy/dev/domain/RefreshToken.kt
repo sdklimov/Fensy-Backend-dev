@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class RefreshToken(
     val id: UUID? = null,
-    val user: User,
+    val userId: Long,
     val tokenHash: String,
     val jwtId: String,
     val expiresAt: OffsetDateTime,
