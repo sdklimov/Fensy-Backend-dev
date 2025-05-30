@@ -1,5 +1,6 @@
 package ru.fensy.dev.repository
 
+import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Component
@@ -30,8 +31,8 @@ class PostAttachmentsRepository(
     private fun of(source: Map<String, Any>) = source.let {
         PostAttachment(
             id = it["id"] as Long,
-            filePath = it["file_path"] as String,
-            fullFilePath = ""
+            postId = it["post_id"] as Long,
+            fileId = it["file_id"] as UUID,
         )
     }
 

@@ -11,8 +11,8 @@ enum PostAllowViewingFor {
 
 type PostAttachment {
     id: ID!
-    filePath: String!
-    fullFilePath: String!
+    postId: ID!
+    fileId: String!
 }
 
 type Post {

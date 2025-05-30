@@ -13,13 +13,7 @@ class GetPostGraphQLController(
 
     @QueryMapping("getPost")
     suspend fun getPost(env: DataFetchingEnvironment): PostResponse {
-
         val postId = (((env.arguments as Map<String, Any>).entries.first().value) as String).toLong()
-        val pageNumber = env.queryDirectives.getImmediateAppliedDirective("page")
-            .firstOrNull()?.getArgument("pageNumber")?.getValue<Int>() ?: 1
-        val pageSize = env.queryDirectives.getImmediateAppliedDirective("page")
-            .firstOrNull()?.getArgument("pageSize")?.getValue<Int>() ?: 25
-
         return getPostByIdUseCase.execute(postId)
     }
 
