@@ -41,7 +41,7 @@ class RefreshTokenRepository(
             .sql(
                 """
                 select id, user_id, token_hash, jwt_id, expires_at, revoked
-                from refresh_tokens where user_id = :userId, jwt_id = :jti and token_hash = :tokenHash and expires_at > now()
+                from refresh_tokens where user_id = :userId and jwt_id = :jti and token_hash = :tokenHash and expires_at > now()
             """.trimIndent()
             )
             .bind("userId", userId)
