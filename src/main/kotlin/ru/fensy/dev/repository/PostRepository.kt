@@ -1,6 +1,5 @@
 package ru.fensy.dev.repository
 
-import java.time.OffsetDateTime
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
@@ -8,7 +7,6 @@ import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.PageRequest
 import ru.fensy.dev.domain.Post
-import ru.fensy.dev.domain.PostAllowVieweingFor
 import ru.fensy.dev.repository.querydata.CreatePostQueryData
 import ru.fensy.dev.repository.querydata.UpdatePostQueryData
 
@@ -27,7 +25,7 @@ class PostRepository(
             .bind("id", id)
             .fetch()
             .one()
-            .map { of(it) }
+            .map { Post.of(it) }
             .awaitSingle()
     }
 
@@ -42,7 +40,7 @@ class PostRepository(
             .bind("authorId", id)
             .fetch()
             .all()
-            .map { of(it) }
+            .map { Post.of(it) }
             .collectList()
             .awaitSingle()
     }
@@ -64,7 +62,7 @@ class PostRepository(
             .bind("limit", pageRequest.pageSize)
             .fetch()
             .all()
-            .map { of(it) }
+            .map { Post.of(it) }
             .collectList()
             .awaitSingle()
     }
@@ -79,7 +77,7 @@ class PostRepository(
             .bind("collectionId", collectionId)
             .fetch()
             .all()
-            .map { of(it) }
+            .map { Post.of(it) }
             .collectList()
             .awaitSingle()
 
@@ -93,7 +91,7 @@ class PostRepository(
             .bind("originalPostId", originalPostId)
             .fetch()
             .all()
-            .map { of(it) }
+            .map { Post.of(it) }
             .collectList()
             .awaitSingle()
 
@@ -121,11 +119,11 @@ class PostRepository(
             .bind("originalPostId", post.originalPostId)
             .fetch()
             .one()
-            .map { of(it) }
+            .map { Post.of(it) }
             .awaitSingle()
 
     suspend fun update(post: UpdatePostQueryData): Post {
-       return databaseClient
+        return databaseClient
             .sql(
                 """
                 update posts set author_id = :authorId,  title = :title, content = :content, allow_viewing_for = :allowViewingFor
@@ -140,26 +138,9 @@ class PostRepository(
             .bind("allowViewingFor", post.allowViewingFor.name)
             .fetch()
             .one()
-            .map { of(it) }
+            .map { Post.of(it) }
             .awaitSingle()
     }
 
-    private fun of(source: Map<String, Any>): Post {
-        return source.let {
-            Post(
-                id = it["id"] as Long,
-                authorId = it["author_id"] as Long,
-                title = it["title"] as? String,
-                content = it["content"] as String,
-                allowViewingFor = PostAllowVieweingFor.valueOf(it["allow_viewing_for"] as String),
-                pinned = it["pinned"] as Boolean,
-                adultContent = it["adult_content"] as Boolean,
-                originalPostId = it["original_post_id"] as? Long,
-                isRepost = it["is_repost"] as Boolean,
-                createdAt = it["created_at"] as OffsetDateTime,
-                updatedAt = it["updated_at"] as OffsetDateTime,
-            )
-        }
-    }
 
 }

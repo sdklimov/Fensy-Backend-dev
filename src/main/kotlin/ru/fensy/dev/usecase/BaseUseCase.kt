@@ -19,7 +19,7 @@ open class BaseUseCase {
      * Может быть null
      */
     @Nullable
-    suspend fun currentUser(required: Boolean): User? {
+    suspend fun currentUser(required: Boolean = false): User? {
         return Mono.deferContextual { ctx ->
             ctx.getOrEmpty<User>(CURRENT_USER_CONTEXT_KEY).getOrNull()?.let { Mono.just(it) }
                 ?: Mono.empty()

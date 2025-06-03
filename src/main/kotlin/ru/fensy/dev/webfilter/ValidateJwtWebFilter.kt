@@ -49,8 +49,12 @@ class ValidateJwtWebFilter(
             .flatMap { user ->
                 return@flatMap chain.filter(exchange)
                     .contextWrite { context ->
-                        context.put(CURRENT_USER_CONTEXT_KEY, user)
-                        context.put(JWT_CLAIMS, claims)
+                        context.putAllMap(
+                            mapOf(
+                                CURRENT_USER_CONTEXT_KEY to user,
+                                JWT_CLAIMS to claims
+                            )
+                        )
                     }
             }
             .then()

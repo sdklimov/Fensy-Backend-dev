@@ -106,6 +106,8 @@ extend type Query {
     getPost(postId: String): PostResponse!
     """ Получить все посты пользователя """
     getAllUserPosts(username: String): PostsResponse!
+    """ Получить ленту """
+    getFeed: PostsResponse!
 }
 
 extend type Mutation {

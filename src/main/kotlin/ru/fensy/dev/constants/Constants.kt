@@ -1,7 +1,7 @@
 package ru.fensy.dev.constants
 
 const val CURRENT_USER_CONTEXT_KEY = "currentUser"
-const val REQUEST_HTTP_HEADERS = "httpHheaders"
+const val REQUEST_HTTP_HEADERS = "httpHeaders"
 const val JWT_CLAIMS = "claims"
 const val JTI_CLAIM_NAME = "jti"
 
