@@ -15,12 +15,12 @@ class FeedRepository(
         return databaseClient
             .sql(
                 """
-        WITH user_interest_weights AS (SELECT interest_id,
+        with user_interest_weights as (select interest_id,
                                               weight
-                                       FROM user_interests
-                                       WHERE user_id = :userId),
+                                       from user_interests
+                                       where user_id = :userId),
 
-             posts_with_weights AS (SELECT   p.id,
+             posts_with_weights as (select   p.id,
                                              p.original_post_id,
                                              p.is_repost,
                                              p.author_id,
@@ -33,19 +33,19 @@ class FeedRepository(
                                              p.created_at,
                                              p.updated_at,
                                              pi.interest_id,
-                                             COALESCE(uiw.weight, 0)                                                      AS interest_weight,
-                                           -- Добавляем ранжирование для стабильной пагинации
-                                           ROW_NUMBER()
-                                           OVER (ORDER BY COALESCE(uiw.weight, 0) DESC, p.created_at DESC)              AS global_rank
-                                    FROM posts p
-                                             LEFT JOIN post_interests pi ON p.id = pi.post_id
-                                             LEFT JOIN user_interest_weights uiw ON pi.interest_id = uiw.interest_id
-                                             where not p.is_deleted)
+                                             coalesce(uiw.weight, 0)                                                      as interest_weight,
+                                           -- добавляем ранжирование для стабильной пагинации
+                                           row_number()
+                                           over (order by coalesce(uiw.weight, 0) desc, p.created_at desc)              as global_rank
+                                    from posts p
+                                             left join post_interests pi on p.id = pi.post_id
+                                             left join user_interest_weights uiw on pi.interest_id = uiw.interest_id
+                                             where not p.is_deleted and p.allow_viewing_for != 'NONE')
 
-        SELECT *
-        FROM posts_with_weights
-        ORDER BY global_rank
-        LIMIT :limit OFFSET :offset;
+        select *
+        from posts_with_weights
+        order by global_rank
+        limit :limit offset :offset;
     """.trimIndent()
             )
             .bind("limit", pageRequest.pageSize)
@@ -59,7 +59,24 @@ class FeedRepository(
     }
 
     suspend fun getForAll(pageRequest: PageRequest): List<Post> {
-        return emptyList()
+        return databaseClient
+            .sql(
+                """
+                select *
+                from posts
+                where not is_deleted
+                  and allow_viewing_for != 'NONE'
+                  order by created_at desc 
+                limit :limit offset :offset;
+            """.trimIndent()
+            )
+            .bind("limit", pageRequest.pageSize)
+            .bind("offset", pageRequest.offset)
+            .fetch()
+            .all()
+            .map { Post.of(it) }
+            .collectList()
+            .awaitSingleOrNull() ?: emptyList()
     }
 
 
