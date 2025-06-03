@@ -39,7 +39,8 @@ class FeedRepository(
                                            OVER (ORDER BY COALESCE(uiw.weight, 0) DESC, p.created_at DESC)              AS global_rank
                                     FROM posts p
                                              LEFT JOIN post_interests pi ON p.id = pi.post_id
-                                             LEFT JOIN user_interest_weights uiw ON pi.interest_id = uiw.interest_id)
+                                             LEFT JOIN user_interest_weights uiw ON pi.interest_id = uiw.interest_id
+                                             where not p.is_deleted)
 
         SELECT *
         FROM posts_with_weights
