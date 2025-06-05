@@ -2,7 +2,6 @@ package ru.fensy.dev.usecase.post
 
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import ru.fensy.dev.graphql.controller.post.response.BaseResponse
 import ru.fensy.dev.graphql.controller.post.response.LikeResponse
 import ru.fensy.dev.repository.PostLikeRepository
 import ru.fensy.dev.usecase.BaseUseCase

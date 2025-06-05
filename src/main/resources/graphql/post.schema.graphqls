@@ -38,6 +38,7 @@ type Post {
     createdAt: String!
     updatedAt: String!
     likes: Int!
+    comments: [Comment]
 }
 
 type PostResponse {

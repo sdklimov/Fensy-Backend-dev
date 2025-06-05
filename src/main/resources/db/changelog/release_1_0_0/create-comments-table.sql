@@ -12,8 +12,8 @@ create table comments
     parent_id bigint references comments (id) on update cascade on delete cascade
 );
 
-create index comments_author_id_post_id_idx on comments (author_id, post_id);
-create index comments_author_id_post_id_parent_id_idx on comments (author_id, post_id, parent_id);
+create index comments_post_id_idx on comments (post_id);
+create index comments_author_id_idx on comments (author_id);
 
 comment on table comments is 'Комментарии к постам, включая вложенные (ответы на комментарии)';
 
