@@ -24,10 +24,6 @@ create index posts_author_id_idx on posts (author_id);
 create index posts_title_idx on posts (title);
 create index posts_content_idx on posts (content);
 create index posts_allow_viewing_for_idx on posts (allow_viewing_for);
-
-create index if not exists posts_pgroonga_title_content_idx
-    on posts using pgroonga (title, content);
-
 -- Комментарии
 comment on table posts is 'Публикации пользователей';
 

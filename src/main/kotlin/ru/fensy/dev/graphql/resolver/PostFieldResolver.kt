@@ -13,6 +13,7 @@ import ru.fensy.dev.repository.CollectionRepository
 import ru.fensy.dev.repository.InterestsRepository
 import ru.fensy.dev.repository.ParsedLinkRepository
 import ru.fensy.dev.repository.PostAttachmentsRepository
+import ru.fensy.dev.repository.PostLikeRepository
 import ru.fensy.dev.repository.PostRepository
 import ru.fensy.dev.repository.PostViewsRepository
 import ru.fensy.dev.repository.TagsRepository
@@ -28,6 +29,7 @@ class PostFieldResolver(
     private val parsedLinkRepository: ParsedLinkRepository,
     private val collectionRepository: CollectionRepository,
     private val postAttachmentsRepository: PostAttachmentsRepository,
+    private val postLikeRepository: PostLikeRepository,
 ) {
 
     @SchemaMapping(typeName = "Post", field = "author")
@@ -79,6 +81,11 @@ class PostFieldResolver(
     @SchemaMapping(typeName = "Post", field = "attachedCollections")
     suspend fun attachedCollections(post: Post): List<Collection> {
         return collectionRepository.findAttachedCollectionsByPostId(post.id)
+    }
+
+    @SchemaMapping(typeName = "Post", field = "likes")
+    suspend fun likes(post: Post): Long {
+        return postLikeRepository.getPostLikes(post.id)
     }
 
 }

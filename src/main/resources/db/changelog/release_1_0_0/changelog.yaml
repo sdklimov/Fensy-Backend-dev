@@ -1,5 +1,4 @@
 databaseChangeLog:
-  - include: { relativeToChangelogFile: true, file: create-pgroonga-extension.sql }
   - include: { relativeToChangelogFile: true, file: create-countries-table.sql }
   - include: { relativeToChangelogFile: true, file: create-languages-table.sql }
   - include: { relativeToChangelogFile: true, file: create-user-table.sql }
@@ -25,3 +24,4 @@ databaseChangeLog:
   - include: { relativeToChangelogFile: true, file: create-refresh-token-table.sql }
   - include: { relativeToChangelogFile: true, file: create-file-upload-session-table.sql }
   - include: { relativeToChangelogFile: true, file: create-file-upload-session-to-file-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-post-likes-table.sql }

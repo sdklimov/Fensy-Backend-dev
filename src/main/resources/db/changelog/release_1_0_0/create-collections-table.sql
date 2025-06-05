@@ -20,11 +20,6 @@ create index on collections (author_id);
 create index on collections (title);
 create index on collections (description);
 create index on collections (allow_viewing_for);
-create index if not exists collections_pgroonga_text_idx
-    on collections using pgroonga (
-                                   title,
-                                   description
-        );
 
 -- Комментарии
 comment on table collections is 'Коллекции постов пользователя';

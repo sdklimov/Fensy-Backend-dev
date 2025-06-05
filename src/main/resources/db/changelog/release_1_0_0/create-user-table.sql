@@ -36,14 +36,6 @@ create unique index users_ton_wallet_id_idx on users (ton_wallet_id);
 create unique index users_yandex_id_idx on users (yandex_id);
 create unique index users_vk_id_idx on users (vk_id);
 
-create index if not exists users_pgroonga_text_idx
-    on users using pgroonga (
-                             username,
-                             full_name,
-                             bio,
-                             location
-        );
-
 -- Комментарии
 comment on table users is 'Пользователи';
 

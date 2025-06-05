@@ -37,12 +37,18 @@ type Post {
     interests: [Interest]!
     createdAt: String!
     updatedAt: String!
+    likes: Int!
 }
 
 type PostResponse {
     success: Boolean!
     message: String!
     post: Post
+}
+
+type LikeResponse {
+    success: Boolean!
+    message: String!
 }
 
 type PostsResponse {
@@ -121,4 +127,6 @@ extend type Mutation {
     deletePost(postId: ID!): PostResponse!
     """ Добавить посту просмотр от пользователя """
     addPostView(postId: ID!): PostResponse!
+    """ Лайкнуть пост """
+    addLike(postId: ID!): LikeResponse!
 }
