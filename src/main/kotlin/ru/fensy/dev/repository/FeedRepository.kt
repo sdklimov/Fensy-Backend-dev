@@ -62,12 +62,54 @@ class FeedRepository(
         return databaseClient
             .sql(
                 """
-                select *
-                from posts
-                where not is_deleted
-                  and allow_viewing_for != 'NONE'
-                  order by created_at desc 
-                limit :limit offset :offset;
+                   with like_counts as (
+                select post_id, count(*) as like_count
+                from post_likes
+                group by post_id
+            ),
+                 comment_counts as (
+                     select post_id, count(*) as comment_count
+                     from comments
+                     group by post_id
+                 ),
+                 popularity_ranked as (
+                     select
+                         p.*,
+                         coalesce(lc.like_count, 0) + coalesce(cc.comment_count, 0) as popularity,
+                         row_number() over (order by coalesce(lc.like_count, 0) + coalesce(cc.comment_count, 0) desc, p.created_at desc) as pop_rank
+                     from posts p
+                              left join like_counts lc on lc.post_id = p.id
+                              left join comment_counts cc on cc.post_id = p.id
+                     where not p.is_deleted
+                       and p.allow_viewing_for != 'NONE'
+                 ),
+                 popular_posts as (
+                     select * from popularity_ranked
+                     where pop_rank <= (SELECT ceil(:limit * 0.8))
+                 ),
+                 newest_ranked as (
+                     select
+                         p.*,
+                         0 as popularity,
+                         row_number() over (order by p.created_at desc) as new_rank
+                     from posts p
+                     where not p.is_deleted
+                       and p.allow_viewing_for != 'NONE'
+                       and p.id not in (select id from popular_posts) -- 💥 исключаем популярные
+                 ),
+                 new_posts as (
+                     select * from newest_ranked
+                     where new_rank <= (SELECT ceil(:limit * 0.2))
+                 ),
+                 combined as (
+                     select * from popular_posts
+                     union all
+                     select * from new_posts
+                 )
+            select *
+            from combined
+            order by created_at desc
+            limit :limit offset :offset;
             """.trimIndent()
             )
             .bind("limit", pageRequest.pageSize)

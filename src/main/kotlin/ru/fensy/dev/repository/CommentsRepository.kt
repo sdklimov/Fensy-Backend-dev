@@ -1,6 +1,7 @@
 package ru.fensy.dev.repository
 
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Component
@@ -72,6 +73,20 @@ class CommentsRepository(
             .awaitSingle()
     }
 
+    suspend fun getById(id: Long): Comment? {
+        return databaseClient
+            .sql("""
+                select *, (select exists(select 1 from comments cc where cc.parent_id = c.id limit 1)) as has_children
+                    from comments c
+                    where id = :id
+            """.trimIndent())
+            .bind("id", id)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingleOrNull()
+    }
+
     private fun of(source: Map<String, Any>) = source.let {
         Comment(
             id = it["id"] as Long,
@@ -79,7 +94,7 @@ class CommentsRepository(
             authorId = it["author_id"] as Long,
             postId = it["post_id"] as Long,
             parentId = it["parent_id"] as? Long,
-            hasChildren = it["has_children"] as Boolean,
+            hasChildren = (it["has_children"] as? Boolean) ?: false,
         )
     }
 

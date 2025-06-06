@@ -7,6 +7,7 @@ import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter
 import org.springframework.stereotype.Component
 import ru.fensy.dev.exception.UserNotExistsInContextException
 import org.springframework.graphql.execution.ErrorType.UNAUTHORIZED
+import org.springframework.graphql.execution.ErrorType.BAD_REQUEST
 import org.springframework.graphql.execution.ErrorType.INTERNAL_ERROR
 import org.springframework.http.HttpStatus
 
@@ -20,6 +21,14 @@ class GraphQLExceptionResolver : DataFetcherExceptionResolverAdapter() {
                     .message(ex.message ?: HttpStatus.UNAUTHORIZED.toString())
                     .errorType(UNAUTHORIZED)
                     .extensions(mapOf("code" to HttpStatus.UNAUTHORIZED.value()))
+                    .build()
+            }
+
+            is IllegalArgumentException -> {
+                GraphqlErrorBuilder.newError(env)
+                    .message(ex.message ?: HttpStatus.BAD_REQUEST.toString())
+                    .errorType(BAD_REQUEST)
+                    .extensions(mapOf("code" to HttpStatus.BAD_REQUEST.value()))
                     .build()
             }
 

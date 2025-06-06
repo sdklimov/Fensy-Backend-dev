@@ -16,6 +16,16 @@ class CreateCommentUseCase(
     suspend fun execute(request: CreateCommentRequest): CommentResponse {
         val currentUserId = currentUser(true)!!.id!!
 
+        val parentPostId = request.parentCommentId?.let {
+            commentsRepository.getById(it)
+        }
+
+        parentPostId?.let {
+            if (it.postId != request.postId) {
+                throw IllegalArgumentException("В комментарии с id = [${request.postId} отсутствует родительский комментарий с id = [${request.parentCommentId}]]")
+            }
+        }
+
         val comment = commentsRepository.create(
             content = request.content,
             authorId = currentUserId,
