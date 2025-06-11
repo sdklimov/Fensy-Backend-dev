@@ -7,9 +7,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import ru.fensy.dev.constants.Constants.CONTENT_MODERATION_EXCEPTION
 import ru.fensy.dev.exception.FileUploadSessionNotExistsException
-import ru.fensy.dev.file.FilePersister
 import ru.fensy.dev.graphql.controller.post.response.PostResponse
+import ru.fensy.dev.proxy.OpenAIModerationProxyService
 import ru.fensy.dev.repository.CollectionRepository
 import ru.fensy.dev.repository.FileUploadSessionRepository
 import ru.fensy.dev.repository.InterestsRepository
@@ -19,11 +20,8 @@ import ru.fensy.dev.repository.PostRepository
 import ru.fensy.dev.repository.TagsRepository
 import ru.fensy.dev.repository.querydata.CreateParsedLinkQueryData
 import ru.fensy.dev.repository.querydata.CreatePostQueryData
-import ru.fensy.dev.service.FileMimeTypeValidateService
 import ru.fensy.dev.usecase.BaseUseCase
 import ru.fensy.dev.usecase.post.operationmodel.CreatePostOperationRq
-
-//import ru.fensy.dev.service.ValidateCreatePostRequestService
 
 /**
  * Создать пост
@@ -32,14 +30,13 @@ import ru.fensy.dev.usecase.post.operationmodel.CreatePostOperationRq
 @Transactional
 class CreatePostUseCase(
     private val postRepository: PostRepository,
-    private val fileMimeTypeValidateService: FileMimeTypeValidateService,
     private val interestRepository: InterestsRepository,
     private val tagsRepository: TagsRepository,
     private val parsedLinkRepository: ParsedLinkRepository,
     private val collectionRepository: CollectionRepository,
-    private val filePersister: FilePersister,
     private val postAttachmentRepository: PostAttachmentRepository,
     private val fileUploadSessionRepository: FileUploadSessionRepository,
+    private val openAIModerationProxyService: OpenAIModerationProxyService,
 ) : BaseUseCase() {
 
     suspend fun execute(input: CreatePostOperationRq): PostResponse = coroutineScope {
@@ -48,6 +45,14 @@ class CreatePostUseCase(
 
         if (input.pinned) {
             postRepository.resetPinned(currentUserId)
+        }
+
+        val moderationResult = openAIModerationProxyService.moderate(content = input.content)
+
+        when (moderationResult) {
+            FLAGGED -> throw CONTENT_MODERATION_EXCEPTION
+            "OK" -> {}
+            else -> {throw IllegalArgumentException("Ошибка при выполнении валидации")}
         }
 
         val newPostRq = CreatePostQueryData(
@@ -137,6 +142,10 @@ class CreatePostUseCase(
             ?.let { collectionIds ->
                 collectionRepository.addPostToCollections(postId, collectionIds)
             }
+    }
+
+    companion object {
+        private const val FLAGGED =  "Flagged"
     }
 
 }

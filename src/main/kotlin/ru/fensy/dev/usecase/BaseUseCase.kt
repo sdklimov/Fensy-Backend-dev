@@ -6,9 +6,9 @@ import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.http.HttpHeaders
 import reactor.core.publisher.Mono
-import ru.fensy.dev.constants.CURRENT_USER_CONTEXT_KEY
-import ru.fensy.dev.constants.JWT_CLAIMS
-import ru.fensy.dev.constants.REQUEST_HTTP_HEADERS
+import ru.fensy.dev.constants.Constants.CURRENT_USER_CONTEXT_KEY
+import ru.fensy.dev.constants.Constants.JWT_CLAIMS
+import ru.fensy.dev.constants.Constants.REQUEST_HTTP_HEADERS
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.exception.UserNotExistsInContextException
 

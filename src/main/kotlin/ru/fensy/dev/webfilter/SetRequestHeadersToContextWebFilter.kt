@@ -6,7 +6,7 @@ import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
 import reactor.core.publisher.Mono
-import ru.fensy.dev.constants.REQUEST_HTTP_HEADERS
+import ru.fensy.dev.constants.Constants.REQUEST_HTTP_HEADERS
 
 @Component
 class SetRequestHeadersToContextWebFilter(

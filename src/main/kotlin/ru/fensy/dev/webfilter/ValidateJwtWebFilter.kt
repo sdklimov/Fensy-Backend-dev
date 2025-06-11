@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
+import ru.fensy.dev.constants.Constants.CURRENT_USER_CONTEXT_KEY
+import ru.fensy.dev.constants.Constants.JWT_CLAIMS
 import reactor.core.publisher.Mono
-import ru.fensy.dev.constants.CURRENT_USER_CONTEXT_KEY
-import ru.fensy.dev.constants.JWT_CLAIMS
 import ru.fensy.dev.exception.UserNotFoundException
 import ru.fensy.dev.repository.UserRepository
 import ru.fensy.dev.service.jwt.JwtService

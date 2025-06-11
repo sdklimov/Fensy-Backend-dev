@@ -28,6 +28,9 @@ application:
       region: ${S3_REGION:ru-central1}
       key-id: ${S3_KEY_ID:}
       key-secret: ${S3_KEY_SECRET:}
+  content-moderation:
+    openai:
+      key: ${OPENAI_KEY_SECRET:}
 
 spring:
   graphql:
@@ -76,6 +79,7 @@ server:
 
 logging:
   level:
+    ru.fensy.dev: DEBUG
     org.springframework.r2dbc: ${R2DBC_LOGGING_LEVEL:DEBUG}
     io.r2dbc.postgresql.QUERY: ${POSTGRESQL_QUERY_LOGGING_LEVEL:DEBUG}
     io.r2dbc.postgresql.PARAM: ${POSTGRESQL_PARAM_LOGGING_LEVEL:DEBUG}

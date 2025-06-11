@@ -10,6 +10,7 @@ import org.springframework.graphql.execution.ErrorType.UNAUTHORIZED
 import org.springframework.graphql.execution.ErrorType.BAD_REQUEST
 import org.springframework.graphql.execution.ErrorType.INTERNAL_ERROR
 import org.springframework.http.HttpStatus
+import ru.fensy.dev.exception.ContentModerationException
 
 @Component
 class GraphQLExceptionResolver : DataFetcherExceptionResolverAdapter() {
@@ -29,6 +30,14 @@ class GraphQLExceptionResolver : DataFetcherExceptionResolverAdapter() {
                     .message(ex.message ?: HttpStatus.BAD_REQUEST.toString())
                     .errorType(BAD_REQUEST)
                     .extensions(mapOf("code" to HttpStatus.BAD_REQUEST.value()))
+                    .build()
+            }
+
+            is ContentModerationException -> {
+                GraphqlErrorBuilder.newError(env)
+                    .message(ex.message)
+                    .errorType(BAD_REQUEST)
+                    .extensions(mapOf("code" to HttpStatus.UNPROCESSABLE_ENTITY.value()))
                     .build()
             }
 

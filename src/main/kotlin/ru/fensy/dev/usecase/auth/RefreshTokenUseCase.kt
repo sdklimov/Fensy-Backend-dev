@@ -5,7 +5,7 @@ import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ServerWebExchange
-import ru.fensy.dev.constants.JTI_CLAIM_NAME
+import ru.fensy.dev.constants.Constants.JTI_CLAIM_NAME
 import ru.fensy.dev.exception.AccessDeniedException
 import ru.fensy.dev.extension.sha256
 import ru.fensy.dev.graphql.controller.auth.response.RefreshResponse
