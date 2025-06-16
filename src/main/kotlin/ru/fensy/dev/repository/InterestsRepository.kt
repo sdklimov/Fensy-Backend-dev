@@ -3,6 +3,7 @@ package ru.fensy.dev.repository
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
+import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.Interest
 
@@ -13,6 +14,37 @@ import ru.fensy.dev.domain.Interest
 class InterestsRepository(
     private val databaseClient: DatabaseClient,
 ) {
+
+    suspend fun getAll(): List<Interest> {
+        return databaseClient
+            .sql {
+                """
+                select * from interests;
+            """.trimIndent()
+            }
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+    }
+
+    suspend fun getAllWithTranslation(languageId: Long): List<Interest> {
+        return databaseClient
+            .sql {
+                """
+            select * from interests i
+            left join interest_translations it on it.interest_id = i.id
+            and language_id = :languageId
+            """.trimIndent()
+            }
+            .bind("languageId", languageId)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+    }
 
     suspend fun findByPostId(postId: Long): List<Interest> =
         databaseClient
@@ -45,18 +77,22 @@ class InterestsRepository(
     suspend fun addInterestsToPost(postId: Long, interests: List<Long>) {
         val values = interests.joinToString(", ") { "($postId, $it)" }
         databaseClient
-            .sql("""
+            .sql(
+                """
                 insert into post_interests (post_id, interest_id) values $values
-            """.trimIndent())
+            """.trimIndent()
+            )
             .fetch()
             .awaitRowsUpdated()
     }
 
     suspend fun deleteInterestsFromPost(postId: Long, interestIds: List<Long>) {
         databaseClient
-            .sql("""
+            .sql(
+                """
                 delete from post_interests where post_id = :postId and interest_id = any (:interestIds);
-            """.trimIndent())
+            """.trimIndent()
+            )
             .bind("postId", postId)
             .bind("interestIds", interestIds.toTypedArray())
             .fetch()
@@ -66,11 +102,13 @@ class InterestsRepository(
     suspend fun addUserInterests(userId: Long, interestIds: List<Long>) {
         val values = interestIds.joinToString(", ") { "($userId, $it)" }
         databaseClient
-            .sql("""
+            .sql(
+                """
                 insert into user_interests(user_id, interest_id)
                 values $values
                 on conflict (user_id, interest_id) do update set weight =  user_interests.weight + 0.1;
-            """.trimIndent())
+            """.trimIndent()
+            )
             .fetch()
             .awaitRowsUpdated()
     }
@@ -80,6 +118,7 @@ class InterestsRepository(
             Interest(
                 id = it["id"] as Long,
                 name = it["name"] as String,
+                translation = it["translation"] as? String,
             )
         }
 

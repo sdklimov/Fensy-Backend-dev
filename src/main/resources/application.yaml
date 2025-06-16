@@ -79,7 +79,7 @@ server:
 
 logging:
   level:
-    ru.fensy.dev: DEBUG
+    ru.fensy.dev: debug
     org.springframework.r2dbc: ${R2DBC_LOGGING_LEVEL:DEBUG}
     io.r2dbc.postgresql.QUERY: ${POSTGRESQL_QUERY_LOGGING_LEVEL:DEBUG}
     io.r2dbc.postgresql.PARAM: ${POSTGRESQL_PARAM_LOGGING_LEVEL:DEBUG}
