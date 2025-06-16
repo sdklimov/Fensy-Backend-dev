@@ -15,8 +15,7 @@ class GetAllUserCollectionsGraphQLController(
     suspend fun getAllUserCollections(
         env: DataFetchingEnvironment,
     ): CollectionsResponse {
-        val res = getAllUserCollectionsUseCase.execute(env)
-        return res
+        return getAllUserCollectionsUseCase.execute(env)
     }
 
 }
