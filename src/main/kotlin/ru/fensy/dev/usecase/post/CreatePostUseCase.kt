@@ -47,13 +47,14 @@ class CreatePostUseCase(
             postRepository.resetPinned(currentUserId)
         }
 
-        val moderationResult = openAIModerationProxyService.moderate(content = input.content)
-
-        when (moderationResult) {
-            FLAGGED -> throw CONTENT_MODERATION_EXCEPTION
-            "OK" -> {}
-            else -> {throw IllegalArgumentException("Ошибка при выполнении валидации")}
-        }
+        // todo: Включить когда будет отдельный сервис
+//        val moderationResult = openAIModerationProxyService.moderate(content = input.content)
+//
+//        when (moderationResult) {
+//            FLAGGED -> throw CONTENT_MODERATION_EXCEPTION
+//            "OK" -> {}
+//            else -> {throw IllegalArgumentException("Ошибка при выполнении валидации")}
+//        }
 
         val newPostRq = CreatePostQueryData(
             originalPostId = input.originalPostId,

@@ -22,7 +22,7 @@ class GetAllUserPostsUseCase(
     private val logger = KotlinLogging.logger { }
 
     suspend fun execute(env: DataFetchingEnvironment): PostsResponse {
-        val userName = (((env.arguments as Map<String, Any>).entries.first().value) as String).toString()
+        val userName = (((env.arguments as Map<String, Any>).entries.firstOrNull()?.value) as? String)?.toString() ?: throw IllegalArgumentException("Username не может быть пустым")
         val pageNumber = env.queryDirectives.getImmediateAppliedDirective("page")
             .firstOrNull()?.getArgument("pageNumber")?.getValue<Int>() ?: 1
         val pageSize = env.queryDirectives.getImmediateAppliedDirective("page")
