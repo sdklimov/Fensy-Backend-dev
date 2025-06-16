@@ -14,6 +14,20 @@ class CollectionRepository(
     private val databaseClient: DatabaseClient,
 ) {
 
+    suspend fun findByUserId(userId: Long): List<Collection> =
+        databaseClient
+            .sql(
+                """
+                select * from collections where author_id = :userId;
+            """.trimIndent()
+            )
+            .bind("userId", userId)
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+
     suspend fun findByPostId(postId: Long): List<Collection> =
         databaseClient
             .sql(
