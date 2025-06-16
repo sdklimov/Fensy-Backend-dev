@@ -1,11 +1,11 @@
 enum UserRole {
-    user
-    pro
+    USER
+    PRO
 }
 
 type User {
     id: ID!
-    is_verified: Boolean!
+    isVerified: Boolean!
     fullName: String
     username: String!
     email: String

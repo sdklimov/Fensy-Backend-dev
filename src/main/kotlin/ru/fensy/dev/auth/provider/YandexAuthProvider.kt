@@ -11,6 +11,7 @@ import ru.fensy.dev.domain.UserRole
 import ru.fensy.dev.repository.CountriesRepository
 import ru.fensy.dev.repository.LanguagesRepository
 import ru.fensy.dev.repository.UserRepository
+import ru.fensy.dev.repository.UserSettingsRepository
 import ru.fensy.dev.service.YandexUserInfoProxyService
 import ru.fensy.dev.service.avatar.DefaultAvatarService
 
@@ -21,6 +22,7 @@ class YandexAuthProvider(
     private val countriesRepository: CountriesRepository, //todo: Вынести в сервис с ленивой загрузкой (кеш)
     private val languagesRepository: LanguagesRepository, //todo: Вынести в сервис с ленивой загрузкой (кеш)
     private val defaultAvatarService: DefaultAvatarService,
+    private val userSettingsRepository: UserSettingsRepository,
 ) : AuthProvider {
 
     override fun name(): String = PROVIDER_NAME
@@ -70,6 +72,7 @@ class YandexAuthProvider(
             updatedAt = OffsetDateTime.now()
         )
         val created = userRepository.create(user)
+        userSettingsRepository.create(created)
         return@coroutineScope CreateUserOperationResult(isCreated = true, user = created)
     }
 

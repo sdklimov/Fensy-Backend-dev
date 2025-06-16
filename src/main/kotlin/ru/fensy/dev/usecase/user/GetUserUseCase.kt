@@ -2,17 +2,15 @@ package ru.fensy.dev.usecase.user
 
 import graphql.schema.DataFetchingEnvironment
 import org.springframework.stereotype.Component
-import ru.fensy.dev.graphql.controller.post.response.PostResponse
 import ru.fensy.dev.graphql.controller.user.response.UserResponse
 import ru.fensy.dev.repository.UserRepository
 import ru.fensy.dev.usecase.BaseUseCase
-import ru.fensy.dev.usecase.post.operationmodel.CreatePostOperationRq
 
 /**
  * Получить пользователя
  */
 @Component
-class GetUserUsaCase(
+class GetUserUseCase(
     private val userRepository: UserRepository,
 ): BaseUseCase() {
 

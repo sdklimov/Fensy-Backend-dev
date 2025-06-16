@@ -10,6 +10,20 @@ class CountriesRepository(
     private val databaseClient: DatabaseClient
 ) {
 
+    suspend fun getById(id: Long): Country {
+        return databaseClient
+            .sql(
+                """
+                select * from countries where id = :id
+            """.trimIndent()
+            )
+            .bind("id", id)
+            .fetch()
+            .one()
+            .map { Country(id = it["id"] as Long, code = it["code"] as String, name = null) }
+            .awaitSingle()
+    }
+
     suspend fun getByCode(countryCode: String): Country {
         return databaseClient
             .sql(

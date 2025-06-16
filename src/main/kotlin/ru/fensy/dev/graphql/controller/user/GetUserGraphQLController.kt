@@ -4,14 +4,14 @@ import graphql.schema.DataFetchingEnvironment
 import org.springframework.graphql.data.method.annotation.QueryMapping
 import org.springframework.stereotype.Controller
 import ru.fensy.dev.graphql.controller.user.response.UserResponse
-import ru.fensy.dev.usecase.user.GetUserUsaCase
+import ru.fensy.dev.usecase.user.GetUserUseCase
 
 @Controller
 class GetUserGraphQLController(
-    private val getUserUsaCase: GetUserUsaCase,
+    private val getUserUseCase: GetUserUseCase,
 ) {
 
     @QueryMapping("getUser")
-    suspend fun getUser(env: DataFetchingEnvironment): UserResponse = getUserUsaCase.execute(env)
+    suspend fun getUser(env: DataFetchingEnvironment): UserResponse = getUserUseCase.execute(env)
 
 }
