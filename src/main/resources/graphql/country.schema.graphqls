@@ -1,7 +1,7 @@
 type Country {
     id: ID!
     code: String!
-    name: String!
+    name: String
 }
 
 type CountriesResponse {
