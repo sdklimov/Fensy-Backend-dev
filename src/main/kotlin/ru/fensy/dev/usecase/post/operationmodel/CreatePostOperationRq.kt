@@ -15,5 +15,5 @@ data class CreatePostOperationRq(
     val fileSessionId: UUID?,
     val parsedLinks: List<CreatedParsedLink>? = emptyList(),
     val interestIds: List<Long>,
-    val collectionIds: List<Long>,
+    val collectionIds: List<Long> = emptyList(),
 )

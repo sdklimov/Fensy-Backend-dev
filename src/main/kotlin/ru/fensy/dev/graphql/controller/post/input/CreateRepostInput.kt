@@ -14,5 +14,5 @@ data class CreateRepostInput(
     val fileSessionId: String? = null,
     val parsedLinks: List<CreatedParsedLink>? = emptyList(),
     val interestIds: List<Long>,
-    val collectionIds: List<Long>,
+    val collectionIds: List<Long> = emptyList(),
     )

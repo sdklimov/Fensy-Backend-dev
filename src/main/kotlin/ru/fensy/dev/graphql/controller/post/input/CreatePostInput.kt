@@ -12,5 +12,5 @@ data class CreatePostInput(
     val fileSessionId: String? = null,
     val parsedLinks: List<CreatedParsedLink>? = emptyList(),
     val interestIds: List<Long>,
-    val collectionIds: List<Long>,
+    val collectionIds: List<Long> = emptyList(),
 )
