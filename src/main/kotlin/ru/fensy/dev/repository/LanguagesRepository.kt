@@ -10,6 +10,20 @@ class LanguagesRepository(
     private val databaseClient: DatabaseClient,
 ) {
 
+    suspend fun getAll(): List<Language> {
+        return databaseClient
+            .sql(
+                """
+                select * from languages
+            """.trimIndent()
+            )
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+    }
+
     suspend fun getById(id: Long): Language {
         return databaseClient
             .sql(
@@ -20,7 +34,7 @@ class LanguagesRepository(
             .bind("id", id)
             .fetch()
             .one()
-            .map { Language(id = it["id"] as Long, code = it["code"] as String, name = it["name"] as String) }
+            .map { of(it) }
             .awaitSingle()
     }
 
@@ -34,8 +48,14 @@ class LanguagesRepository(
             .bind("code", languageCode)
             .fetch()
             .one()
-            .map { Language(id = it["id"] as Long, code = it["code"] as String, name = it["name"] as String) }
+            .map { of(it) }
             .awaitSingle()
+    }
+
+    private fun of(source: Map<String, Any>): Language {
+        return source.let {
+            Language(id = it["id"] as Long, code = it["code"] as String, name = it["name"] as String)
+        }
     }
 
 }
