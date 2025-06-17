@@ -3,6 +3,7 @@ package ru.fensy.dev.exceptionhandler
 import graphql.GraphQLError
 import graphql.GraphqlErrorBuilder
 import graphql.schema.DataFetchingEnvironment
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter
 import org.springframework.stereotype.Component
 import ru.fensy.dev.exception.UserNotExistsInContextException
@@ -15,7 +16,12 @@ import ru.fensy.dev.exception.ContentModerationException
 @Component
 class GraphQLExceptionResolver : DataFetcherExceptionResolverAdapter() {
 
+    private val log = KotlinLogging.logger { }
+
     override fun resolveToSingleError(ex: Throwable, env: DataFetchingEnvironment): GraphQLError? {
+
+        log.error(ex) { "Непредвиденная ошибка"}
+
         return when (ex) {
             is UserNotExistsInContextException -> {
                 GraphqlErrorBuilder.newError(env)
