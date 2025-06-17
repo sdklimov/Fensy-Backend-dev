@@ -7,8 +7,22 @@ import ru.fensy.dev.domain.Country
 
 @Component
 class CountriesRepository(
-    private val databaseClient: DatabaseClient
+    private val databaseClient: DatabaseClient,
 ) {
+
+    suspend fun findAll(): List<Country> {
+        return databaseClient
+            .sql(
+                """
+                select * from countries
+            """.trimIndent()
+            )
+            .fetch()
+            .all()
+            .map { of(it) }
+            .collectList()
+            .awaitSingle()
+    }
 
     suspend fun getById(id: Long): Country {
         return databaseClient
@@ -20,7 +34,7 @@ class CountriesRepository(
             .bind("id", id)
             .fetch()
             .one()
-            .map { Country(id = it["id"] as Long, code = it["code"] as String, name = null) }
+            .map { of(it) }
             .awaitSingle()
     }
 
@@ -28,14 +42,20 @@ class CountriesRepository(
         return databaseClient
             .sql(
                 """
-                select id, code from countries where code = :code
+                select * from countries where code = :code
             """.trimIndent()
             )
             .bind("code", countryCode)
             .fetch()
             .one()
-            .map { Country(id = it["id"] as Long, code = it["code"] as String, name = null) }
+            .map { of(it) }
             .awaitSingle()
+    }
+
+    private fun of(source: Map<String, Any>): Country {
+      return  source.let {
+            Country(id = it["id"] as Long, code = it["code"] as String, name = it["name"] as String)
+        }
     }
 
 }

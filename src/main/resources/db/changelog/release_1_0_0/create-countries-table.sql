@@ -6,7 +6,8 @@
 create table countries
 (
     id   bigserial primary key,
-    code text not null
+    code text not null,
+    name text not null
 );
 
 -- Индекс
@@ -17,6 +18,7 @@ comment on table countries is 'Справочник стран';
 
 comment on column countries.id is 'Идентификатор';
 comment on column countries.code is 'Код страны (например, RU, US, FR)';
+comment on column countries.name is 'Название страны';
 
 
 --rollback drop table countries;
