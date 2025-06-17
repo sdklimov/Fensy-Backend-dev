@@ -1,12 +1,12 @@
 package ru.fensy.dev.graphql.controller.post.input
 
-import ru.fensy.dev.domain.PostAllowVieweingFor
+import ru.fensy.dev.domain.AllowViewingFor
 
 data class UpdatePostInput(
     val id: Long,
     val title: String,
     val content: String,
-    val allowViewingFor: PostAllowVieweingFor,
+    val allowViewingFor: AllowViewingFor,
     val pinned: Boolean = false,
     val tags: List<String> = emptyList(),
 //    val attachments: List<FilePart>? = emptyList(),

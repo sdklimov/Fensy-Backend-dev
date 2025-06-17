@@ -12,6 +12,7 @@ import org.springframework.graphql.execution.ErrorType.BAD_REQUEST
 import org.springframework.graphql.execution.ErrorType.INTERNAL_ERROR
 import org.springframework.http.HttpStatus
 import ru.fensy.dev.exception.ContentModerationException
+import ru.fensy.dev.exception.UserCollectionAlreadyExistsException
 
 @Component
 class GraphQLExceptionResolver : DataFetcherExceptionResolverAdapter() {
@@ -44,6 +45,14 @@ class GraphQLExceptionResolver : DataFetcherExceptionResolverAdapter() {
                     .message(ex.message)
                     .errorType(BAD_REQUEST)
                     .extensions(mapOf("code" to HttpStatus.UNPROCESSABLE_ENTITY.value()))
+                    .build()
+            }
+
+            is UserCollectionAlreadyExistsException -> {
+                GraphqlErrorBuilder.newError(env)
+                    .message(ex.message)
+                    .errorType(BAD_REQUEST)
+                    .extensions(mapOf("code" to HttpStatus.BAD_REQUEST.value()))
                     .build()
             }
 

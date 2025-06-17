@@ -1,5 +1,5 @@
 package ru.fensy.dev.domain
 
-enum class PostAllowVieweingFor {
+enum class AllowViewingFor {
     ANY, FOLLOWERS, NONE, DONORS
 }

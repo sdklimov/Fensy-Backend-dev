@@ -4,6 +4,7 @@ import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.stereotype.Component
+import ru.fensy.dev.domain.AllowViewingFor
 import ru.fensy.dev.domain.Collection
 
 /**
@@ -13,6 +14,39 @@ import ru.fensy.dev.domain.Collection
 class CollectionRepository(
     private val databaseClient: DatabaseClient,
 ) {
+
+    suspend fun checkCollectionExistsWithTitle(title: String, userId: Long): Boolean {
+        return databaseClient
+            .sql(
+                """
+                select exists((select 1 from collections where title = :title and author_id = :userId))
+            """.trimIndent()
+            )
+            .bind("title", title)
+            .bind("userId", userId)
+            .fetch()
+            .one()
+            .map { it["exists"] as Boolean }
+            .awaitSingle()
+    }
+
+    suspend fun createUserCollection(rq: CreateUserCollectionQueryRq): Collection =
+        databaseClient
+            .sql(
+                """
+                insert into collections(author_id, title, description, allow_viewing_for) 
+                values (:userId, :title, :description, :allowViewingFor)
+                returning *
+            """.trimIndent()
+            )
+            .bind("userId", rq.userId)
+            .bind("title", rq.title)
+            .bind("description", rq.description)
+            .bind("allowViewingFor", rq.allowViewingFor.name)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingle()
 
     suspend fun findByUserId(userId: Long): List<Collection> =
         databaseClient
@@ -92,3 +126,11 @@ class CollectionRepository(
 
 
 }
+
+
+data class CreateUserCollectionQueryRq(
+    val userId: Long,
+    val title: String,
+    val description: String,
+    val allowViewingFor: AllowViewingFor,
+)
