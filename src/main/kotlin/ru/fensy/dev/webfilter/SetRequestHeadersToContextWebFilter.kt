@@ -20,12 +20,12 @@ class SetRequestHeadersToContextWebFilter(
                 chain.filter(exchange)
                     .contextWrite { context ->
 
-                        context.put(REQUEST_HTTP_HEADERS, it)
-                        exchange.request.remoteAddress?.address?.hostAddress?.let {
-                            context.put("ipAddress", it)
+                        val map = mutableMapOf<String, Any>()
+                        map[REQUEST_HTTP_HEADERS] = it
+                        exchange.request.remoteAddress?.address?.hostAddress?.let { ip ->
+                            map["ipAddress"] = ip
                         }
-                        context
-
+                        context.putAllMap(map)
                     }
             }
             .then()
