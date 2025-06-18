@@ -1,5 +1,6 @@
 package ru.fensy.dev.repository
 
+import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
@@ -14,6 +15,47 @@ import ru.fensy.dev.repository.querydata.UpdatePostQueryData
 class PostRepository(
     private val databaseClient: DatabaseClient,
 ) {
+
+    suspend fun search(query: String, limit: Int, offset: Int): List<Post> {
+        return databaseClient
+            .sql(
+                """
+                select * from posts
+                         where not is_deleted
+                and title ilike :query
+                or content ilike :query
+                   and allow_viewing_for = 'ANY'
+                   limit :limit offset :offset;
+            """.trimIndent()
+            )
+            .bind("query", query)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .fetch()
+            .all()
+            .map { Post.of(it) }
+            .collectList()
+            .awaitSingle()
+    }
+
+    suspend fun count(query: String): Long {
+        return databaseClient
+            .sql(
+                """
+                    
+                    select count(*) as total from posts
+                         where not is_deleted
+                and title ilike :query
+                or content ilike :query
+                   and allow_viewing_for = 'ANY'
+            """.trimIndent()
+            )
+            .bind("query", query)
+            .fetch()
+            .all()
+            .map { it["total"] as Long }
+            .awaitSingle()
+    }
 
     suspend fun findById(id: Long): Post {
         return databaseClient
@@ -144,3 +186,10 @@ class PostRepository(
 
 
 }
+
+data class SearchPostQueryRs(
+    val posts: List<Post>,
+    val limit: Int,
+    val offset: Int,
+    val total: Long,
+)
