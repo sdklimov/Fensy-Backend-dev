@@ -15,37 +15,14 @@ class FeedRepository(
         return databaseClient
             .sql(
                 """
-        with user_interest_weights as (select interest_id,
-                                              weight
-                                       from user_interests
-                                       where user_id = :userId),
-
-             posts_with_weights as (select   p.id,
-                                             p.original_post_id,
-                                             p.is_repost,
-                                             p.author_id,
-                                             p.allow_viewing_for,
-                                             p.pinned,
-                                             p.adult_content,
-                                             p.is_deleted,
-                                             p.title,
-                                             p.content,
-                                             p.created_at,
-                                             p.updated_at,
-                                             pi.interest_id,
-                                             coalesce(uiw.weight, 0)                                                      as interest_weight,
-                                           -- добавляем ранжирование для стабильной пагинации
-                                           row_number()
-                                           over (order by coalesce(uiw.weight, 0) desc, p.created_at desc)              as global_rank
-                                    from posts p
-                                             left join post_interests pi on p.id = pi.post_id
-                                             left join user_interest_weights uiw on pi.interest_id = uiw.interest_id
-                                             where not p.is_deleted and p.allow_viewing_for != 'NONE')
-
-        select *
-        from posts_with_weights
-        order by global_rank
-        limit :limit offset :offset;
+                    SELECT DISTINCT ON (p.id) p.*, COALESCE(SUM(ui.weight) OVER (PARTITION BY p.id), 0) AS relevance
+            FROM posts p
+                     JOIN post_interests pi ON p.id = pi.post_id
+                     JOIN user_interests ui ON pi.interest_id = ui.interest_id AND ui.user_id = :userId
+            WHERE p.is_deleted = false
+              AND (p.allow_viewing_for = 'ANY')
+            ORDER BY p.id, p.pinned DESC, relevance DESC, p.created_at DESC
+                    limit :limit offset :offset;
     """.trimIndent()
             )
             .bind("limit", pageRequest.pageSize)
