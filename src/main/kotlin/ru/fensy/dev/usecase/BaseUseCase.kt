@@ -37,6 +37,13 @@ open class BaseUseCase {
         }.awaitSingle()
     }
 
+    @Nullable
+    suspend fun getIp(): String {
+        return Mono.deferContextual { ctx ->
+            Mono.just(ctx.get<String>("ipAddress"))
+        }.awaitSingle()
+    }
+
     suspend fun getJwtClaims(): Map<String, Any> = Mono.deferContextual { ctx ->
         Mono.just(ctx.get<Map<String, Any>>(JWT_CLAIMS))
     }.awaitSingle()

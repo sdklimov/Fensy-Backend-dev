@@ -19,7 +19,13 @@ class SetRequestHeadersToContextWebFilter(
             .flatMap {
                 chain.filter(exchange)
                     .contextWrite { context ->
+
                         context.put(REQUEST_HTTP_HEADERS, it)
+                        exchange.request.remoteAddress?.address?.hostAddress?.let {
+                            context.put("ipAddress", it)
+                        }
+                        context
+
                     }
             }
             .then()

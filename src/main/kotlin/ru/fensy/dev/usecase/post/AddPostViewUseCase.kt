@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.graphql.controller.post.response.PostResponse
 import ru.fensy.dev.repository.InterestsRepository
 import ru.fensy.dev.repository.PostViewsRepository
+import ru.fensy.dev.usecase.BaseUseCase
 
 /**
  * Получить пост
@@ -14,11 +15,11 @@ import ru.fensy.dev.repository.PostViewsRepository
 class AddPostViewUseCase(
     private val postViewsRepository: PostViewsRepository,
     private val interestsRepository: InterestsRepository,
-) {
+): BaseUseCase() {
 
     suspend fun execute(id: Long): PostResponse {
-        val userId: Long? = 1L // todo: брать из контекста
-        val ipAddress = "127.0.0.1" // todo: брать из контекста
+        val userId: Long? = currentUser(false)?.id
+        val ipAddress = getIp()
 
         postViewsRepository.addPostView(id, ipAddress)
 
