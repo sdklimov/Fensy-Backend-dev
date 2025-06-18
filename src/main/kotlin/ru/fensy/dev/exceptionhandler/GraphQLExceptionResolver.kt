@@ -4,6 +4,7 @@ import graphql.GraphQLError
 import graphql.GraphqlErrorBuilder
 import graphql.schema.DataFetchingEnvironment
 import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlin.reflect.full.findAnnotation
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter
 import org.springframework.stereotype.Component
 import ru.fensy.dev.exception.UserNotExistsInContextException
@@ -11,6 +12,7 @@ import org.springframework.graphql.execution.ErrorType.UNAUTHORIZED
 import org.springframework.graphql.execution.ErrorType.BAD_REQUEST
 import org.springframework.graphql.execution.ErrorType.INTERNAL_ERROR
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.ResponseStatus
 import ru.fensy.dev.exception.ContentModerationException
 import ru.fensy.dev.exception.UserCollectionAlreadyExistsException
 
@@ -57,10 +59,11 @@ class GraphQLExceptionResolver : DataFetcherExceptionResolverAdapter() {
             }
 
             else -> {
+                val statusCode = ex::class.findAnnotation<ResponseStatus>()?.value ?: HttpStatus.INTERNAL_SERVER_ERROR
                 GraphqlErrorBuilder.newError(env)
                     .message(ex.message ?: "Что-то пошло не так")
                     .errorType(INTERNAL_ERROR)
-                    .extensions(mapOf("code" to HttpStatus.INTERNAL_SERVER_ERROR.value()))
+                    .extensions(mapOf("code" to statusCode))
                     .build()
             }
         }

@@ -30,6 +30,20 @@ class UserRepository(
             .awaitSingle()
     }
 
+    suspend fun findByYandexId(yandexId: String): User? {
+        return databaseClient
+            .sql(
+                """
+                select * from users where yandex_id = :yandexId and is_active
+            """.trimIndent()
+            )
+            .bind("yandexId", yandexId)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingleOrNull()
+    }
+
     suspend fun findByUsername(username: String): User? {
         return databaseClient
             .sql(
@@ -42,6 +56,44 @@ class UserRepository(
             .one()
             .map { of(it) }
             .awaitSingleOrNull()
+    }
+
+    suspend fun checkUserExistsByUsername(username: String): Boolean =
+        databaseClient
+            .sql(
+                """
+                select exists (select 1 from users where username = :username)
+            """.trimIndent()
+            )
+            .bind("username", username)
+            .fetch()
+            .one()
+            .map { it["exists"] as Boolean }
+            .awaitSingle()
+
+    suspend fun update(user: User): User {
+        return databaseClient
+            .sql(
+                """
+                update users set full_name = :fullName, username = :userName, email = :email,
+                bio = :bio, location = :location, website = :website, country_id = :countryId, language_id = :languageId
+                where id = :id
+                returning *
+            """.trimIndent()
+            )
+            .bind("id", user.id)
+            .bind("fullName", user.fullName)
+            .bind("userName", user.username)
+            .bind("email", user.email)
+            .bind("bio", user.bio)
+            .bind("location", user.location)
+            .bind("website", user.website)
+            .bind("countryId", user.countryId)
+            .bind("languageId", user.languageId)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingle()
     }
 
     suspend fun create(user: User): User {

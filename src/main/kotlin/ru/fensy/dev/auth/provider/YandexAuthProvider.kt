@@ -36,9 +36,9 @@ class YandexAuthProvider(
     }
 
     private suspend fun getOrCreateUser(userInfo: Map<String, Any>): CreateUserOperationResult {
-        val login = userInfo["login"] as String
+        val yandexId = userInfo["id"] as String
 
-        return userRepository.findByUsername(login)?.let {
+        return userRepository.findByYandexId(yandexId)?.let {
             CreateUserOperationResult(isCreated = false, user = it)
         } ?: create(userInfo)
     }
