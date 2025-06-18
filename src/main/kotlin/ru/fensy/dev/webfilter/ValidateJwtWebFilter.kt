@@ -11,7 +11,9 @@ import org.springframework.web.server.WebFilterChain
 import ru.fensy.dev.constants.Constants.CURRENT_USER_CONTEXT_KEY
 import ru.fensy.dev.constants.Constants.JWT_CLAIMS
 import reactor.core.publisher.Mono
+import ru.fensy.dev.exception.AccessDeniedException
 import ru.fensy.dev.exception.UserNotFoundException
+import ru.fensy.dev.repository.RevokedTokensRepository
 import ru.fensy.dev.repository.UserRepository
 import ru.fensy.dev.service.jwt.JwtService
 
@@ -19,6 +21,7 @@ import ru.fensy.dev.service.jwt.JwtService
 class ValidateJwtWebFilter(
     private val jwtService: JwtService,
     private val userRepository: UserRepository,
+    private val revokedTokensRepository: RevokedTokensRepository
 ) : WebFilter {
 
 
@@ -40,13 +43,19 @@ class ValidateJwtWebFilter(
                 }
             )
 
+
         return mono {
             val userName = claims.get("sub") as String
             val user = userRepository.findByUsername(userName)
                 ?: throw UserNotFoundException("Пользователь [$userName] не найден")
+            val jti = claims["jti"] as String
+            if (revokedTokensRepository.checkIsRevoked(jti, user.id!!)) {
+                throw AccessDeniedException()
+            }
             user
         }
             .flatMap { user ->
+
                 return@flatMap chain.filter(exchange)
                     .contextWrite { context ->
                         context.putAllMap(
