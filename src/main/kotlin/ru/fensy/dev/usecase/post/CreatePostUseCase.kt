@@ -81,7 +81,8 @@ class CreatePostUseCase(
 
         deferred.awaitAll()
 
-        return@coroutineScope PostResponse(post = createdPost, success = true, message = "Пост успешно создан")
+        return@coroutineScope PostResponse(post = createdPost, success = true,
+            message = input.originalPostId?.let { "Репост успешно создан" } ?: "Пост успешно создан")
 
     }
 

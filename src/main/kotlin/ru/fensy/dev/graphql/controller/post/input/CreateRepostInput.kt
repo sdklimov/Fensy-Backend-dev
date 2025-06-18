@@ -5,7 +5,7 @@ import ru.fensy.dev.domain.AllowViewingFor
 
 data class CreateRepostInput(
     val originalPostId: Long,
-    val title: String,
+    val title: String? = null,
     val content: String,
     val allowViewingFor: AllowViewingFor,
     val pinned: Boolean = false,
@@ -13,6 +13,6 @@ data class CreateRepostInput(
     val attachments: List<UUID>? = emptyList(),
     val fileSessionId: String? = null,
     val parsedLinks: List<CreatedParsedLink>? = emptyList(),
-    val interestIds: List<Long>,
+    val interestIds: List<Long> = emptyList(),
     val collectionIds: List<Long> = emptyList(),
     )

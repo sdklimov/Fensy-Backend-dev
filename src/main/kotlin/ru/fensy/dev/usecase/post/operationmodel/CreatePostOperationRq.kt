@@ -6,7 +6,7 @@ import ru.fensy.dev.graphql.controller.post.input.CreatedParsedLink
 
 data class CreatePostOperationRq(
     val originalPostId: Long? = null,
-    val title: String,
+    val title: String?,
     val content: String,
     val allowViewingFor: AllowViewingFor,
     val pinned: Boolean = false,
