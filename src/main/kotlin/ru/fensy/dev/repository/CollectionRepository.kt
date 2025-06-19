@@ -1,6 +1,7 @@
 package ru.fensy.dev.repository
 
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.stereotype.Component
@@ -14,6 +15,19 @@ import ru.fensy.dev.domain.Collection
 class CollectionRepository(
     private val databaseClient: DatabaseClient,
 ) {
+
+    suspend fun findById(id: Long): Collection? =
+        databaseClient
+            .sql(
+                """
+                select * from collections where id = :id;
+            """.trimIndent()
+            )
+            .bind("id", id)
+            .fetch()
+            .one()
+            .map { of(it) }
+            .awaitSingleOrNull()
 
     suspend fun checkCollectionExistsWithTitle(title: String, userId: Long): Boolean {
         return databaseClient
