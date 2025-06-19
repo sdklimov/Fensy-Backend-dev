@@ -91,7 +91,7 @@ class PostRepository(
         return databaseClient
             .sql {
                 """
-                    select * from posts p
+                    select p.* from posts p
                     join users u on p.author_id = u.id
                     where u.username = :userName
                     and not p.is_deleted
