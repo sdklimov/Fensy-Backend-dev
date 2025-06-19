@@ -15,6 +15,11 @@ type PostAttachment {
     fileId: String!
 }
 
+type PostReaction {
+    emoji: String!
+    count: Int!
+}
+
 type Post {
     id: ID!
     authorId: ID!
@@ -39,6 +44,7 @@ type Post {
     updatedAt: String!
     likes: Int!
     comments: [Comment]
+    reactions: [PostReaction]
 }
 
 type PostResponse {

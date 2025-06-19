@@ -10,6 +10,7 @@ import ru.fensy.dev.domain.PageRequest
 import ru.fensy.dev.domain.ParsedLink
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.PostAttachment
+import ru.fensy.dev.domain.PostReaction
 import ru.fensy.dev.domain.Tag
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.graphql.controller.post.response.CommentResponse
@@ -20,6 +21,7 @@ import ru.fensy.dev.repository.InterestsRepository
 import ru.fensy.dev.repository.ParsedLinkRepository
 import ru.fensy.dev.repository.PostAttachmentsRepository
 import ru.fensy.dev.repository.PostLikeRepository
+import ru.fensy.dev.repository.PostReactionRepository
 import ru.fensy.dev.repository.PostRepository
 import ru.fensy.dev.repository.PostViewsRepository
 import ru.fensy.dev.repository.TagsRepository
@@ -38,6 +40,7 @@ class PostFieldResolver(
     private val postLikeRepository: PostLikeRepository,
     private val commentsRepository: CommentsRepository,
     private val postProperties: PostProperties,
+    private val postReactionRepository: PostReactionRepository,
 ) {
 
     @SchemaMapping(typeName = "Post", field = "author")
@@ -96,6 +99,12 @@ class PostFieldResolver(
         return postLikeRepository.getPostLikes(post.id)
     }
 
+    @SchemaMapping(typeName = "Post", field = "reactions")
+    suspend fun reactions(post: Post): List<PostReactionViewRs> {
+        return postReactionRepository.getByPostId(post.id)
+            .map { PostReactionViewRs(it.count, it.emoji) }
+    }
+
     @SchemaMapping(typeName = "Post", field = "comments")
     suspend fun comments(env: DataFetchingEnvironment): List<Comment> {
         val pageNumber = env.queryDirectives.getImmediateAppliedDirective("page")
@@ -108,3 +117,7 @@ class PostFieldResolver(
     }
 
 }
+data class PostReactionViewRs(
+    val count: Long,
+    val emoji: String,
+)

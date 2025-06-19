@@ -29,6 +29,25 @@ class PostReactionRepository(
             .awaitSingleOrNull()
     }
 
+    suspend fun getByPostId(postId: Long): List<PostReactionQueryRs> {
+        return databaseClient
+            .sql(
+                """
+                select emoji,
+                       count(*) as count
+                from post_reactions
+                where post_id = :postId
+                group by emoji
+            """.trimIndent()
+            )
+            .bind("postId", postId)
+            .fetch()
+            .all()
+            .map { PostReactionQueryRs(count = it["count"] as Long, emoji = it["emoji"] as String) }
+            .collectList()
+            .awaitSingle()
+    }
+
     suspend fun deleteById(id: Long) =
         databaseClient
             .sql(
@@ -71,3 +90,8 @@ class PostReactionRepository(
     }
 
 }
+
+data class PostReactionQueryRs(
+    val count: Long,
+    val emoji: String,
+)
