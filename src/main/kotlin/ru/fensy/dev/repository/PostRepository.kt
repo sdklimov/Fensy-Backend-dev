@@ -2,6 +2,7 @@ package ru.fensy.dev.repository
 
 import kotlinx.coroutines.reactive.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.reactor.awaitSingleOrNull
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.r2dbc.core.bind
@@ -57,7 +58,7 @@ class PostRepository(
             .awaitSingle()
     }
 
-    suspend fun findById(id: Long): Post {
+    suspend fun findById(id: Long): Post? {
         return databaseClient
             .sql {
                 """
@@ -68,7 +69,7 @@ class PostRepository(
             .fetch()
             .one()
             .map { Post.of(it) }
-            .awaitSingle()
+            .awaitSingleOrNull()
     }
 
     suspend fun findByAuthorId(id: Long): List<Post> {

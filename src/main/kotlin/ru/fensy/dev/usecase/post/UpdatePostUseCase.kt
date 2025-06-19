@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.Tag
+import ru.fensy.dev.exception.PostNotFoundException
 import ru.fensy.dev.file.FilePersister
 import ru.fensy.dev.graphql.controller.post.input.UpdatePostInput
 import ru.fensy.dev.graphql.controller.post.response.PostResponse
@@ -42,7 +43,7 @@ class UpdatePostUseCase(
 
     suspend fun execute(input: UpdatePostInput): PostResponse = coroutineScope {
         val currentUserId = 1L // todo: Брать из контекста когда будет JWT
-        val currentPost = postRepository.findById(input.id)
+        val currentPost = postRepository.findById(input.id) ?: throw PostNotFoundException()
 //        input.attachments?.let {
 //            fileMimeTypeValidateService.validate(it)
 //        }
