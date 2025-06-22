@@ -26,3 +26,4 @@ databaseChangeLog:
   - include: { relativeToChangelogFile: true, file: create-file-upload-session-to-file-table.sql }
   - include: { relativeToChangelogFile: true, file: create-post-reactions-table.sql }
   - include: { relativeToChangelogFile: true, file: create-revoked-tokens-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-subscriptions-table.sql }
