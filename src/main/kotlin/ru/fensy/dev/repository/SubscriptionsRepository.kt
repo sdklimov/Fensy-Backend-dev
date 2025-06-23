@@ -1,9 +1,11 @@
 package ru.fensy.dev.repository
 
+import java.nio.ByteBuffer
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.awaitRowsUpdated
 import org.springframework.stereotype.Component
+import ru.fensy.dev.domain.PageRequest
 import ru.fensy.dev.domain.Subscription
 
 @Component
@@ -34,29 +36,55 @@ class SubscriptionsRepository(
             .map { it["exists"] as Boolean }
             .awaitSingle()
 
-    // todo: Добавить пагинацию
-    suspend fun getSubscriptions(subscriberId: Long): List<Subscription> =
+    suspend fun getSubscriptions(subscriberId: Long, pageRequest: PageRequest): List<Subscription> =
         databaseClient
             .sql(
                 """
        select u.id,
                u.username as "userName",
-               u.full_name
+               u.full_name,
+               u.avatar
             from subscriptions s
                      join
                  users u on s.target_id = u.id
-            where s.subscriber_id = :subscriber_id
+            where s.subscriber_id = :subscriberId
+            limit :limit offset :offset
             """.trimIndent()
             )
+            .bind("subscriberId", subscriberId)
+            .bind("limit", pageRequest.pageSize)
+            .bind("offset", pageRequest.offset)
             .fetch()
             .all()
             .map {
                 Subscription(
                     id = it["id"] as Long,
                     fullName = it["full_name"] as String,
-                    userName = it["username"] as String
+                    userName = it["username"] as String,
+                    avatar = it["avatar"] as? ByteBuffer,
                 )
             }
             .collectList()
             .awaitSingle()
+
+    // todo: Переделать на оконную count(*) over
+    suspend fun countSubscriptions(subscriberId: Long): Long =
+        databaseClient
+            .sql(
+                """
+                     select count(*)
+                from subscriptions s
+                         join
+                     users u on s.target_id = u.id
+                where s.subscriber_id = :subscriberId;
+            """.trimIndent()
+            )
+            .bind("subscriberId", subscriberId)
+            .fetch()
+            .one()
+            .map {
+                it["count"] as Long
+            }
+            .awaitSingle()
+
 }
