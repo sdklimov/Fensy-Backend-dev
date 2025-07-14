@@ -1,7 +1,17 @@
 package ru.fensy.dev.usecase.subscriptions
 
+import java.time.OffsetDateTime
+import java.util.UUID
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import ru.fensy.dev.domain.Currency
+import ru.fensy.dev.domain.Payment
+import ru.fensy.dev.domain.PaymentMethod
+import ru.fensy.dev.domain.PaymentStatus
+import ru.fensy.dev.domain.SubscriptionStatus
+import ru.fensy.dev.domain.SubscriptionType
+import ru.fensy.dev.repository.CreateSubscriptionRq
+import ru.fensy.dev.repository.PaymentRepository
 import ru.fensy.dev.repository.SubscriptionsRepository
 import ru.fensy.dev.usecase.BaseUseCase
 
@@ -9,12 +19,42 @@ import ru.fensy.dev.usecase.BaseUseCase
 @Transactional
 class MakeSubscriptionUseCase(
     private val subscriptionsRepository: SubscriptionsRepository,
-): BaseUseCase() {
+    private val paymentRepository: PaymentRepository,
+) : BaseUseCase() {
 
 
-    suspend fun execute(targetUserId: Long) {
-        val currentUser = currentUser(true)
-        subscriptionsRepository.subscribe(subscriberId = currentUser!!.id!!, targetId = targetUserId)
+    suspend fun execute(targetUserId: Long, subscriptionType: SubscriptionType): UUID {
+        val currentUser = currentUser(true)!!
+        val startedAt = OffsetDateTime.now()
+        val expiresAt = when (subscriptionType) {
+            SubscriptionType.MONTHLY -> startedAt.plusMonths(1)
+            SubscriptionType.YEARLY -> startedAt.plusYears(1)
+        }
+
+        val subId = subscriptionsRepository.createSubscription(
+            CreateSubscriptionRq(
+                subscriberId = currentUser.id!!,
+                targetId = targetUserId,
+                subscriptionType = subscriptionType,
+                status = SubscriptionStatus.PENDING,
+                startedAt = startedAt,
+                expiresAt = expiresAt,
+            )
+        )
+
+        val paymentUniqueId = UUID.randomUUID()
+        val payment = Payment(
+            uniqueId = paymentUniqueId,
+            subscriptionId = subId,
+            amountCents = 0,
+            currency = Currency.TON,
+            paymentMethod = PaymentMethod.CRYPTO,
+            status = PaymentStatus.PENDING,
+            validUntil = OffsetDateTime.now().plusDays(1) //todo: Вынести в env
+        )
+
+        paymentRepository.create(payment)
+        return paymentUniqueId
     }
 
 }
