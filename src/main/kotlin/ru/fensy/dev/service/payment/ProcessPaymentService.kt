@@ -12,6 +12,7 @@ import ru.fensy.dev.repository.SubscriptionsRepository
 @Service
 class ProcessPaymentService(
     private val paymentRepository: PaymentRepository,
+    private val verifyPaymentService: VerifyPaymentService,
     private val subscriptionsRepository: SubscriptionsRepository,
 ) {
 
@@ -22,47 +23,62 @@ class ProcessPaymentService(
         println("Найдено: ${payments.size}")
         payments
             .forEach { p ->
-                kotlin.runCatching {
-                    processPayment(p)
-                }
-                    .onFailure {
-                        logger.error(it) { "Ошибка обработки платежа [$p]" }
-                        setStatus(
-                            rq = SetStatusRq(
-                                paymentId = p.id!!,
-                                subscriptionId = p.subscriptionId,
-                                paymentStatus = PaymentStatus.ERROR,
-                                subscriptionStatus = SubscriptionStatus.PAYMENT_PROCESSING_ERROR,
-                            )
-                        )
-                    }
+                //todo: тут когда-нибудь добавить многопоточку
+                processPayment(p)
             }
 
     }
 
     private suspend fun processPayment(payment: Payment) {
-        setStatus(
-            rq = SetStatusRq(
-                paymentId = payment.id!!,
-                subscriptionId = payment.subscriptionId,
-                paymentStatus = PaymentStatus.IN_PROCESSING,
-                subscriptionStatus = SubscriptionStatus.PAYMENT_IN_PROCESSING,
-            )
-        )
-
-        if (OffsetDateTime.now() > payment.validUntil) {
+        runCatching {
             setStatus(
                 rq = SetStatusRq(
-                    paymentId = payment.id,
+                    paymentId = payment.id!!,
                     subscriptionId = payment.subscriptionId,
-                    paymentStatus = PaymentStatus.EXPIRED,
-                    subscriptionStatus = SubscriptionStatus.PAYMENT_EXPIRED,
+                    paymentStatus = PaymentStatus.IN_PROCESSING,
+                    subscriptionStatus = SubscriptionStatus.PAYMENT_IN_PROCESSING,
                 )
             )
-            return
-        }
 
-        activateSubscription(payment)
+            if (OffsetDateTime.now() > payment.validUntil) {
+                setStatus(
+                    rq = SetStatusRq(
+                        paymentId = payment.id,
+                        subscriptionId = payment.subscriptionId,
+                        paymentStatus = PaymentStatus.EXPIRED,
+                        subscriptionStatus = SubscriptionStatus.PAYMENT_EXPIRED,
+                    )
+                )
+                return
+            }
+
+            verifyPaymentService.verify(payment)
+                .takeIf { it }
+                ?.let {
+                    activateSubscription(payment)
+                } ?: run {
+                setStatus(
+                    rq = SetStatusRq(
+                        paymentId = payment.id,
+                        subscriptionId = payment.subscriptionId,
+                        paymentStatus = PaymentStatus.PENDING,
+                        subscriptionStatus = SubscriptionStatus.PENDING,
+                    )
+                )
+            }
+        }
+            .onFailure {
+                logger.error(it) { "Ошибка обработки платежа [$payment]" }
+                setStatus(
+                    rq = SetStatusRq(
+                        paymentId = payment.id!!,
+                        subscriptionId = payment.subscriptionId,
+                        paymentStatus = PaymentStatus.ERROR,
+                        subscriptionStatus = SubscriptionStatus.PAYMENT_PROCESSING_ERROR,
+                    )
+                )
+            }
+
 
     }
 

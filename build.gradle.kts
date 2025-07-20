@@ -15,6 +15,7 @@ java {
 
 repositories {
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -50,6 +51,13 @@ dependencies {
     // aws
     implementation("software.amazon.awssdk:aws-sdk-java:2.31.50")
     implementation("software.amazon.awssdk:netty-nio-client:2.31.50")
+
+    // ton
+//    implementation("io.github.neodix42:smartcontract:1.0.0")
+    implementation("io.github.neodix42:ton4j:1.0.0")
+    implementation("org.ton:ton-kotlin:0.2.18")
+
+//    implementation("org.ton:tonconnect-sdk:0.1.0")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
