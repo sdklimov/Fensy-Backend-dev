@@ -46,7 +46,8 @@ class MakeSubscriptionUseCase(
         val payment = Payment(
             uniqueId = paymentUniqueId,
             subscriptionId = subId,
-            amountCents = 0,
+            //todo: Вынести стоимость подписки в env
+            amountCents = 0.1,
             currency = Currency.TON,
             paymentMethod = PaymentMethod.CRYPTO,
             status = PaymentStatus.PENDING,

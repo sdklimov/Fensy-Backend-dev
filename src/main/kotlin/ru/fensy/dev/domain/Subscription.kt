@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class Subscription(
     val id: Long,
-    val uniqueId: UUID,
+//    val uniqueId: UUID,
     val subscriberId: Long,
     val targetId: Long,
     val subscriptionType: SubscriptionType,

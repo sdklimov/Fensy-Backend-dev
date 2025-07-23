@@ -34,9 +34,9 @@ application:
   ton:
     wallet:
       mnemonics: ${TON_WALLET_MNEMONICS:}
-    provider:
-      url: ${TON_PROVIDER_URL:https://toncenter.com/api/v2/jsonRPC}
-      api-key: ${TON_API_KEY:}
+#    provider:
+#      url: ${TON_PROVIDER_URL:https://toncenter.com/api/v2/jsonRPC}
+#      api-key: ${TON_API_KEY:}
 
 spring:
   graphql:

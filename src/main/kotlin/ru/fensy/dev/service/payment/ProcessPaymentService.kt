@@ -8,12 +8,15 @@ import ru.fensy.dev.domain.PaymentStatus
 import ru.fensy.dev.domain.SubscriptionStatus
 import ru.fensy.dev.repository.PaymentRepository
 import ru.fensy.dev.repository.SubscriptionsRepository
+import ru.fensy.dev.service.subscription.ActivateSubscriptionService
 
 @Service
 class ProcessPaymentService(
     private val paymentRepository: PaymentRepository,
     private val verifyPaymentService: VerifyPaymentService,
     private val subscriptionsRepository: SubscriptionsRepository,
+    private val activateSubscriptionService: ActivateSubscriptionService,
+    private val paymentStatusService: PaymentStatusService,
 ) {
 
     private val logger = KotlinLogging.logger { }
@@ -31,7 +34,7 @@ class ProcessPaymentService(
 
     private suspend fun processPayment(payment: Payment) {
         runCatching {
-            setStatus(
+            paymentStatusService.setStatus(
                 rq = SetStatusRq(
                     paymentId = payment.id!!,
                     subscriptionId = payment.subscriptionId,
@@ -41,7 +44,7 @@ class ProcessPaymentService(
             )
 
             if (OffsetDateTime.now() > payment.validUntil) {
-                setStatus(
+                paymentStatusService.setStatus(
                     rq = SetStatusRq(
                         paymentId = payment.id,
                         subscriptionId = payment.subscriptionId,
@@ -52,24 +55,39 @@ class ProcessPaymentService(
                 return
             }
 
-            verifyPaymentService.verify(payment)
-                .takeIf { it }
-                ?.let {
-                    activateSubscription(payment)
-                } ?: run {
-                setStatus(
-                    rq = SetStatusRq(
-                        paymentId = payment.id,
-                        subscriptionId = payment.subscriptionId,
-                        paymentStatus = PaymentStatus.PENDING,
-                        subscriptionStatus = SubscriptionStatus.PENDING,
-                    )
-                )
+            kotlin.runCatching {
+                verifyPaymentService.verify(payment)
             }
+                .onFailure {
+                    logger.error { it }
+                    paymentStatusService.setStatus(
+                        rq = SetStatusRq(
+                            paymentId = payment.id,
+                            subscriptionId = payment.subscriptionId,
+                            paymentStatus = PaymentStatus.ERROR,
+                            subscriptionStatus = SubscriptionStatus.PAYMENT_PROCESSING_ERROR,
+                        )
+                    )
+                }
+
+            kotlin.runCatching { verifyPaymentService.verify(payment) }
+                .onFailure {
+                    paymentStatusService.setStatus(
+                        rq = SetStatusRq(
+                            paymentId = payment.id,
+                            subscriptionId = payment.subscriptionId,
+                            paymentStatus = PaymentStatus.PENDING,
+                            subscriptionStatus = SubscriptionStatus.PENDING,
+                        )
+                    )
+                }
+                .onSuccess {
+                    activateSubscriptionService.activate(payment)
+                }
         }
             .onFailure {
                 logger.error(it) { "Ошибка обработки платежа [$payment]" }
-                setStatus(
+                paymentStatusService.setStatus(
                     rq = SetStatusRq(
                         paymentId = payment.id!!,
                         subscriptionId = payment.subscriptionId,
@@ -81,25 +99,6 @@ class ProcessPaymentService(
 
 
     }
-
-    private suspend fun setStatus(rq: SetStatusRq) {
-        paymentRepository.updateStatus(paymentId = rq.paymentId, rq.paymentStatus)
-        subscriptionsRepository.updateStatus(rq.subscriptionId, status = rq.subscriptionStatus)
-    }
-
-    private suspend fun activateSubscription(payment: Payment) {
-        setStatus(
-            rq = SetStatusRq(
-                paymentId = payment.id!!,
-                subscriptionId = payment.subscriptionId,
-                paymentStatus = PaymentStatus.SUCCEEDED,
-                subscriptionStatus = SubscriptionStatus.ACTIVE,
-            )
-        )
-
-        subscriptionsRepository.updateStartedAt(payment.subscriptionId)
-    }
-
 
 }
 

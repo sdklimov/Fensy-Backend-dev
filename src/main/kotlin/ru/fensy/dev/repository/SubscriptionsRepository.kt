@@ -51,12 +51,40 @@ class SubscriptionsRepository(
                 where uniqueId = :uniqueId
             """.trimIndent()
             )
+            .bind("uniqueId", uniqueId)
             .fetch()
             .one()
             .map {
                 Subscription(
                     id = it["id"] as Long,
-                    uniqueId = it["unique_id"] as UUID,
+//                    uniqueId = it["unique_id"] as UUID,
+                    subscriberId = it["subscriber_id"] as Long,
+                    targetId = it["target_id"] as Long,
+                    subscriptionType = SubscriptionType.valueOf(it["subscription_type"] as String),
+                    subscriptionStatus = SubscriptionStatus.valueOf(it["status"] as String),
+                    startedAt = (it["started_at"] as OffsetDateTime).withOffsetSameInstant(ZoneOffset.UTC),
+                    expiresAt = (it["expires_at"] as OffsetDateTime).withOffsetSameInstant(ZoneOffset.UTC),
+                    createdAt = (it["created_at"] as OffsetDateTime).withOffsetSameInstant(ZoneOffset.UTC),
+                    updatedAt = (it["updated_at"] as OffsetDateTime).withOffsetSameInstant(ZoneOffset.UTC),
+                )
+            }
+            .awaitSingleOrNull()
+
+    suspend fun getById(id: Long): Subscription? =
+        databaseClient
+            .sql(
+                """
+                select * from subscriptions
+                where id = :id
+            """.trimIndent()
+            )
+            .bind("id", id)
+            .fetch()
+            .one()
+            .map {
+                Subscription(
+                    id = it["id"] as Long,
+//                    uniqueId = it["unique_id"] as UUID,
                     subscriberId = it["subscriber_id"] as Long,
                     targetId = it["target_id"] as Long,
                     subscriptionType = SubscriptionType.valueOf(it["subscription_type"] as String),

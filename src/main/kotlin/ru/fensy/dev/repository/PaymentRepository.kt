@@ -67,7 +67,7 @@ class PaymentRepository(
             id = source["id"] as Long,
             uniqueId = source["unique_id"] as UUID,
             subscriptionId = source["subscription_id"] as Long,
-            amountCents = source["amount_cents"] as Int,
+            amountCents = source["amount_cents"] as Double,
             currency = Currency.valueOf(source["currency"] as String),
             paymentMethod = PaymentMethod.valueOf(source["payment_method"] as String),
             status = PaymentStatus.valueOf(source["status"] as String),

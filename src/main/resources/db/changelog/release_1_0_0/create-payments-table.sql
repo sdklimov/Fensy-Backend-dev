@@ -8,7 +8,7 @@ create table payments
     id              bigserial primary key,
     unique_id       uuid                     not null,
     subscription_id bigint                   not null references subscriptions (id) on delete cascade,
-    amount_cents    integer                  not null,
+    amount_cents    double precision                  not null,
     currency        varchar(10)              not null default 'TON',
     payment_method  varchar(50),
     paid_at         timestamp with time zone          default null,

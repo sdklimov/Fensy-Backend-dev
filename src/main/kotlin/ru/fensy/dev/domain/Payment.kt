@@ -7,7 +7,7 @@ data class Payment(
     val id: Long? = null,
     val uniqueId: UUID,
     val subscriptionId: Long,
-    val amountCents: Int,
+    val amountCents: Double,
     val currency: Currency = Currency.TON,
     val paymentMethod: PaymentMethod,
     val paidAt: OffsetDateTime? = null,
