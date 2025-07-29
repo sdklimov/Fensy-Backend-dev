@@ -82,7 +82,18 @@ class ProcessPaymentService(
                     )
                 }
                 .onSuccess {
-                    activateSubscriptionService.activate(payment)
+                    if (it) {
+                        activateSubscriptionService.activate(payment)
+                    } else {
+                        paymentStatusService.setStatus(
+                            rq = SetStatusRq(
+                                paymentId = payment.id,
+                                subscriptionId = payment.subscriptionId,
+                                paymentStatus = PaymentStatus.PENDING,
+                                subscriptionStatus = SubscriptionStatus.PENDING,
+                            )
+                        )
+                    }
                 }
         }
             .onFailure {

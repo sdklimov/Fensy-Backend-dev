@@ -9,18 +9,21 @@ class VerifyPaymentService(
     private val tonService: TonService,
 ) {
 
-    suspend fun verify(payment: Payment) {
+    suspend fun verify(payment: Payment): Boolean {
         val transactions = tonService.get(100)
-        println(transactions)
+//        transactions.map { it.in_msg_field.message }
+//        transactions.firstOrNull {it.in_msg.message == payment.uniqueId.toString()}
 
-        val validTr = transactions.firstOrNull { it.out_msgs.any { it.message == payment.uniqueId.toString() } } ?: return
+        val validTr =
+            transactions.firstOrNull { it.in_msg.message == payment.uniqueId.toString() } ?: return false
 
-        val amount = validTr.out_msgs?.first()?.value?.toDouble()?.let { it / 1_000_000_000 }
-            ?: error("Ошибка получения суммы из транзакции")
+        val amount = validTr.in_msg.value.toDouble() / 1_000_000_000
 
         if (amount != payment.amountCents) {
             error("Переведенная сумма не соответствует ожидаемой")
         }
+
+        return true
     }
 
 }

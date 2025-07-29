@@ -132,10 +132,12 @@ class SubscriptionsRepository(
                      join
                  users u on s.target_id = u.id
             where s.subscriber_id = :subscriberId
+            and status = :status
             limit :limit offset :offset
             """.trimIndent()
             )
             .bind("subscriberId", subscriberId)
+            .bind("status", SubscriptionStatus.ACTIVE.name)
             .bind("limit", pageRequest.pageSize)
             .bind("offset", pageRequest.offset)
             .fetch()
@@ -160,10 +162,12 @@ class SubscriptionsRepository(
                 from subscriptions s
                          join
                      users u on s.target_id = u.id
-                where s.subscriber_id = :subscriberId;
+                where s.subscriber_id = :subscriberId
+                and status = :status;
             """.trimIndent()
             )
             .bind("subscriberId", subscriberId)
+            .bind("status", SubscriptionStatus.ACTIVE.name)
             .fetch()
             .one()
             .map {

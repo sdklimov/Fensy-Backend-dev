@@ -1,5 +1,6 @@
 package ru.fensy.dev.usecase.subscriptions
 
+import java.math.BigDecimal
 import java.time.OffsetDateTime
 import java.util.UUID
 import org.springframework.stereotype.Component
@@ -13,6 +14,7 @@ import ru.fensy.dev.domain.SubscriptionType
 import ru.fensy.dev.repository.CreateSubscriptionRq
 import ru.fensy.dev.repository.PaymentRepository
 import ru.fensy.dev.repository.SubscriptionsRepository
+import ru.fensy.dev.rest.StartSubscriptionViewRs
 import ru.fensy.dev.usecase.BaseUseCase
 
 @Component
@@ -23,7 +25,7 @@ class MakeSubscriptionUseCase(
 ) : BaseUseCase() {
 
 
-    suspend fun execute(targetUserId: Long, subscriptionType: SubscriptionType): UUID {
+    suspend fun execute(targetUserId: Long, subscriptionType: SubscriptionType): StartSubscriptionViewRs {
         val currentUser = currentUser(true)!!
         val startedAt = OffsetDateTime.now()
         val expiresAt = when (subscriptionType) {
@@ -55,7 +57,12 @@ class MakeSubscriptionUseCase(
         )
 
         paymentRepository.create(payment)
-        return paymentUniqueId
+        return StartSubscriptionViewRs(
+            subscriptionUniqueId = paymentUniqueId,
+            currency = payment.currency.name,
+            amount = BigDecimal.valueOf(payment.amountCents),
+            paymentMethod = payment.paymentMethod.name
+        )
     }
 
 }

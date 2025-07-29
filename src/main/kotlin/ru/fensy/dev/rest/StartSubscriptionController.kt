@@ -1,5 +1,6 @@
 package ru.fensy.dev.rest
 
+import java.math.BigDecimal
 import java.util.UUID
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -20,8 +21,7 @@ class StartSubscriptionController(
     @PostMapping
     suspend fun execute(
         @RequestBody rq: StartSubscriptionRq,
-    ): StartSubscriptionViewRs =
-        StartSubscriptionViewRs(makeSubscriptionUseCase.execute(rq.targetId, rq.subscriptionType))
+    ): StartSubscriptionViewRs = makeSubscriptionUseCase.execute(rq.targetId, rq.subscriptionType)
 
 }
 
@@ -32,4 +32,7 @@ data class StartSubscriptionRq(
 
 data class StartSubscriptionViewRs(
     val subscriptionUniqueId: UUID,
+    val currency: String,
+    val amount: BigDecimal,
+    val paymentMethod: String,
 )
