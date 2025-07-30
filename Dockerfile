@@ -8,6 +8,7 @@ RUN apt update && apt install -y --no-install-recommends \
     libgcc-s1 \
     && rm -rf /var/lib/apt/lists/*
 
+
 WORKDIR /app
 COPY build/libs/fensy-backend-dev.jar app.jar
 
