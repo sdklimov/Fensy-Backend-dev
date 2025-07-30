@@ -16,4 +16,4 @@ create index if not exists post_id_user_id_idx on post_reactions (post_id, user_
 create index if not exists post_id_idx on post_reactions (post_id);
 create index if not exists user_id_idx on post_reactions (user_id);
 
---rollback drop table post_likes;
+--rollback drop table post_reactions;

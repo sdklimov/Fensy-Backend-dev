@@ -14,7 +14,7 @@ class PostLikeRepository(
         return databaseClient
             .sql(
                 """
-                select exists(select 1 from post_likes where post_id = :postId and user_id = :userId)
+                select exists(select 1 from post_reactions where post_id = :postId and user_id = :userId)
             """.trimIndent()
             )
             .bind("postId", postId)
@@ -30,7 +30,7 @@ class PostLikeRepository(
         databaseClient
             .sql(
                 """
-              insert into post_likes(post_id, user_id) values (:postId, :userId);
+              insert into post_reactions(post_id, user_id) values (:postId, :userId);
             """.trimIndent()
             )
             .bind("postId", postId)
@@ -43,7 +43,7 @@ class PostLikeRepository(
         databaseClient
             .sql(
                 """
-                delete from post_likes where post_id = :postId and user_id = :userId
+                delete from post_reactions where post_id = :postId and user_id = :userId
             """.trimIndent()
             )
             .bind("postId", postId)
@@ -55,7 +55,7 @@ class PostLikeRepository(
     suspend fun getPostLikes(postId: Long): Long {
         return databaseClient.sql(
             """
-            select count(*) from post_likes where post_id = :postId
+            select count(*) from post_reactions where post_id = :postId
         """.trimIndent()
         )
             .bind("postId", postId)

@@ -41,7 +41,7 @@ class FeedRepository(
                 """
                    with like_counts as (
                 select post_id, count(*) as like_count
-                from post_likes
+                from post_reactions
                 group by post_id
             ),
                  comment_counts as (
