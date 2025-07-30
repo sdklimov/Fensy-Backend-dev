@@ -1,6 +1,6 @@
 FROM debian:bullseye-slim
 RUN apt update && apt install -y \
-    openjdk-17-jdk \
+    openjdk-21-jdk \
     curl \
     libstdc++6 \
     libgcc-s1 \
