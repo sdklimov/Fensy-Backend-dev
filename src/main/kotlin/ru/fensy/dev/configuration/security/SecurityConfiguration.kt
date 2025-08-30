@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.web.cors.CorsConfiguration
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebFluxSecurity
@@ -15,8 +16,17 @@ class SecurityConfiguration {
     @Bean
     fun configure(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
-            .csrf { it.disable() }
-            .cors { it.disable() }
+            .cors { corsSpec ->
+                corsSpec.configurationSource {
+                    CorsConfiguration().apply {
+                        addAllowedOriginPattern("*")
+                        addAllowedMethod("*")
+                        addAllowedHeader("*")
+                        allowCredentials = true
+                    }
+                }
+            }
+//            .cors { it.disable() }
             .formLogin { it.disable() }
             .logout { it.disable() }
             .authorizeExchange { auth: AuthorizeExchangeSpec ->
