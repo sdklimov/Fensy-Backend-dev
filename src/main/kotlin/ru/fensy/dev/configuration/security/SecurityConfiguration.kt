@@ -26,7 +26,7 @@ class SecurityConfiguration {
                     }
                 }
             }
-//            .cors { it.disable() }
+            .csrf {it.disable().build()}
             .formLogin { it.disable() }
             .logout { it.disable() }
             .authorizeExchange { auth: AuthorizeExchangeSpec ->
