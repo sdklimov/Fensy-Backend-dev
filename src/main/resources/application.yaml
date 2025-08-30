@@ -45,6 +45,8 @@ spring:
     schema:
       locations: classpath:graphql/
     path: /gql
+    cors:
+      allowed-origin-patterns: "*"
   application:
     name: fensy
   main:
