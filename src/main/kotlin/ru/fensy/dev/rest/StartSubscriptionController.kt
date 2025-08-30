@@ -35,4 +35,5 @@ data class StartSubscriptionViewRs(
     val currency: String,
     val amount: BigDecimal,
     val paymentMethod: String,
+    val targetWalletId: String,
 )

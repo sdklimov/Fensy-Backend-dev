@@ -61,7 +61,8 @@ class MakeSubscriptionUseCase(
             subscriptionUniqueId = paymentUniqueId,
             currency = payment.currency.name,
             amount = BigDecimal.valueOf(payment.amountCents),
-            paymentMethod = payment.paymentMethod.name
+            paymentMethod = payment.paymentMethod.name,
+            targetWalletId = "UQDLFhd9p9BPemOPOLAuvCVi93klkjpI0mg4rtL-dZtUWWCT" //todo: убрать хардкод
         )
     }
 
