@@ -28,3 +28,4 @@ databaseChangeLog:
   - include: { relativeToChangelogFile: true, file: create-revoked-tokens-table.sql }
   - include: { relativeToChangelogFile: true, file: create-subscriptions-table.sql }
   - include: { relativeToChangelogFile: true, file: create-payments-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-chat-table.sql }

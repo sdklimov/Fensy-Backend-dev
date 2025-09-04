@@ -19,6 +19,7 @@ repositories {
 }
 
 dependencies {
+	implementation("com.graphql-java:graphql-java-extended-scalars:20.1")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     //jackson

@@ -7,20 +7,16 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.graphql.execution.RuntimeWiringConfigurer
 import ru.fensy.dev.configuration.scalar.UploadScalar
 
-/**
- * Конфигурация для graphQl
- */
 @Configuration(proxyBeanMethods = false)
 class GraphQlConfiguration {
 
-    /**
-     * Подключение расширения для скаляров
-     */
     @Bean
     fun runtimeWiringConfigurer(): RuntimeWiringConfigurer {
         return RuntimeWiringConfigurer { wiringBuilder: RuntimeWiring.Builder ->
             wiringBuilder
                 .scalar(ExtendedScalars.Json)
+                .scalar(ExtendedScalars.UUID)
+                .scalar(ExtendedScalars.DateTime)
         }
     }
 
@@ -30,5 +26,4 @@ class GraphQlConfiguration {
             wiringBuilder.scalar(UploadScalar.Upload)
         }
     }
-
 }

@@ -1,0 +1,46 @@
+scalar UUID
+scalar DateTime
+
+type Message {
+  id: UUID!
+  senderId: ID!
+  recipientId: ID!
+  content: String
+  replyToId: UUID
+  createdAt: DateTime!
+  deletedAt: DateTime
+}
+
+type ChatSummary {
+  peerId: ID!
+  lastMessage: Message
+  unreadCount: Int!
+}
+
+type Presence {
+  userId: ID!
+  online: Boolean!
+  lastSeen: DateTime!
+}
+
+extend type Query {
+  messages(peerId: ID!, limit: Int = 50, before: DateTime): [Message!]!
+  chats(limit: Int = 50, offset: Int = 0): [ChatSummary!]!
+  presence(userIds: [ID!]!): [Presence!]!
+}
+
+extend type Mutation {
+  sendMessage(toUserId: ID!, content: String!, replyToId: UUID): Message!
+  deleteMessage(messageId: UUID!): Boolean!
+}
+
+type Subscription {
+  messageEvents(peerId: ID): MessageEvent!
+  presenceEvents: Presence!
+}
+
+union MessageEvent = MessageCreated | MessageDeleted
+
+type MessageCreated { message: Message! }
+
+type MessageDeleted { messageId: UUID! }
