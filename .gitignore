@@ -1,10 +1,14 @@
 README.md
 .gradle
+.env
+*.blkstate
 build/
 cacerts/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+
+tonlibjson-linux-x86_64.so
 
 ### STS ###
 .apt_generated

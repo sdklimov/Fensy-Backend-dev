@@ -16,10 +16,11 @@ interface MessageRepository : ReactiveCrudRepository<MessageEntity, UUID> {
           (sender_id = :user AND recipient_id = :peer) OR
           (sender_id = :peer AND recipient_id = :user)
         ) AND (:before IS NULL OR created_at < :before)
+		  AND (:after IS NULL OR created_at > :after)
         ORDER BY created_at DESC
         LIMIT :limit
     """)
-    fun dialog(user: String, peer: String, limit: Int, before: OffsetDateTime?): Flux<MessageEntity>
+    fun dialog(user: String, peer: String, limit: Int, before: OffsetDateTime?, after: OffsetDateTime?): Flux<MessageEntity>
 
     @Query("""
         SELECT DISTINCT ON (peer) * FROM (

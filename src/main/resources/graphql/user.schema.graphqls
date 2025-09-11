@@ -61,7 +61,7 @@ extend type Query {
     Получить пользователя по его username.
     Если не передавать username, то вернётся текущий авторизованный пользователь (необходима авторизация)
     """
-    getUser(username: String): UserResponse!
+	getUser(username: String, id: ID): UserResponse
 }
 
 extend type Mutation {

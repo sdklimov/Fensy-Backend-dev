@@ -1,9 +1,9 @@
 package ru.fensy.dev.chat.gql
 
+import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.graphql.data.method.annotation.*
 import org.springframework.stereotype.Controller
 import reactor.core.publisher.Flux
-import reactor.core.publisher.Mono
 import ru.fensy.dev.chat.dto.PresenceDto
 import ru.fensy.dev.chat.security.CurrentUser
 import ru.fensy.dev.chat.service.PresenceService
@@ -19,5 +19,8 @@ class PresenceGraphQL(private val presence: PresenceService) {
 
     // хук: сообщаем о connect/disconnect/heartbeat
     @MutationMapping
-    fun presenceHeartbeat(): Mono<PresenceDto> = CurrentUser.id().flatMap { uid -> presence.heartbeat(uid) }
+    suspend fun presenceHeartbeat(): PresenceDto {
+        val uid = CurrentUser.idSuspend()
+        return presence.heartbeat(uid).awaitSingle()
+    }
 }

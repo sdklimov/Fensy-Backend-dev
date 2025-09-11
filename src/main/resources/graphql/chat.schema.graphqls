@@ -24,7 +24,7 @@ type Presence {
 }
 
 extend type Query {
-  messages(peerId: ID!, limit: Int = 50, before: DateTime): [Message!]!
+  messages(peerId: ID!, limit: Int = 50, before: DateTime, after: DateTime): [Message!]!
   chats(limit: Int = 50, offset: Int = 0): [ChatSummary!]!
   presence(userIds: [ID!]!): [Presence!]!
 }
@@ -36,6 +36,7 @@ extend type Mutation {
 
 type Subscription {
   messageEvents(peerId: ID): MessageEvent!
+  messagesEvents: Message!
   presenceEvents: Presence!
 }
 

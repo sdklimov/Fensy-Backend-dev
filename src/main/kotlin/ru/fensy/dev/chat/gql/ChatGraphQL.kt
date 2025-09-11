@@ -15,10 +15,10 @@ import java.util.UUID
 class ChatGraphQL(private val chat: ChatService) {
 
     @QueryMapping
-    fun messages(@Argument peerId: String, @Argument limit: Int?, @Argument before: OffsetDateTime?): Flux<MessageDto> =
+    fun messages(@Argument peerId: String, @Argument limit: Int?, @Argument before: OffsetDateTime?, @Argument after: OffsetDateTime?): Flux<MessageDto> =
         CurrentUser.id().flatMapMany { me ->
             val lim = (limit ?: 50).coerceIn(1, 200)
-            chat.dialog(me, peerId, lim, before)
+            chat.dialog(me, peerId, lim, before, after)
         }
 
     @QueryMapping
@@ -47,6 +47,14 @@ class ChatGraphQL(private val chat: ChatService) {
                 is ru.fensy.dev.chat.service.MessageEvent.Deleted -> MessageDeleted(ev.messageId)
             } }
         }
+		
+	@SubscriptionMapping
+	fun messagesEvents(): Flux<MessageDto> =
+		CurrentUser.id().flatMapMany { me ->
+			chat.events(me)
+				.filter { ev -> ev is ru.fensy.dev.chat.service.MessageEvent.Created && ev.message.recipientId == me }
+				.map { ev -> (ev as ru.fensy.dev.chat.service.MessageEvent.Created).message }
+		}
 }
 
 class MessageCreated(val message: MessageDto)

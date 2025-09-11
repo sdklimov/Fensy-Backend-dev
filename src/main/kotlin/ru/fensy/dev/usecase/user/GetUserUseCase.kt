@@ -15,7 +15,22 @@ class GetUserUseCase(
 ): BaseUseCase() {
 
     suspend fun execute(env: DataFetchingEnvironment): UserResponse {
-        val username = env.getArgument<String>("username")
+        val idArg = env.getArgument<Any?>("id")
+
+		val username = env.getArgument<String>("username")
+
+		// try id first
+		idArg?.let {
+			val id = when (it) {
+				is Int -> it.toLong()
+				is Long -> it
+				is String -> it.toLongOrNull()
+				else -> null
+			} ?: throw IllegalArgumentException("Invalid id argument")
+
+			val user = userRepository.findById(id)
+			return UserResponse(user = user, message = "Пользователь получен успешно", success = true)
+		}
 
         return username?.let {
             val user = userRepository.findByUsername(it)

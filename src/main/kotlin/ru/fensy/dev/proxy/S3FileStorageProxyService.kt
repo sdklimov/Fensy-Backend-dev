@@ -15,6 +15,8 @@ import software.amazon.awssdk.services.s3.S3AsyncClient
 import software.amazon.awssdk.services.s3.model.GetObjectRequest
 import software.amazon.awssdk.services.s3.model.GetObjectResponse
 import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse
 
 @Service
 class S3FileStorageProxyService(
@@ -62,9 +64,27 @@ class S3FileStorageProxyService(
                     .thenApply { responsePublisher -> responsePublisher }
                     .toCompletableFuture()
             ).awaitSingle()
-
-
     }
+	
+	suspend fun headObjectMetadata(fileId: UUID): Map<String, String> =
+	kotlinx.coroutines.reactor.awaitSingle(
+		Mono.fromFuture(
+			s3Client.headObject(
+				HeadObjectRequest.builder()
+					.bucket(properties.bucketName)
+					.key(fileId.toString())
+					.build()
+			).toCompletableFuture()
+		).map { response: HeadObjectResponse ->
+			val map = mutableMapOf<String,String>()
+			response.contentType()?.let { map["Content-Type"] = it }
+			response.metadata()?.forEach { (k,v) -> map[k] = v }
+			map
+		}
+	)
 
+	suspend fun getContentType(fileId: UUID): String? {
+		val md = headObjectMetadata(fileId)
+		return md["Content-Type"]
+	}
 }
-
