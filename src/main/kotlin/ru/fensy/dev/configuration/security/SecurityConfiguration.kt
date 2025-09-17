@@ -23,7 +23,6 @@ class SecurityConfiguration {
                 auth
                     .anyExchange().permitAll()
             }
-            .oauth2Login(Customizer.withDefaults())
             .build()
     }
 

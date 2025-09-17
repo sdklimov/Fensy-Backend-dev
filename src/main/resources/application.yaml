@@ -66,19 +66,6 @@ spring:
     oauth2:
       user-info-uri:
         yandex: ${YANDEX_USER_INFO_URI:https://login.yandex.ru/info}
-      client:
-        registration:
-          yandex:
-            client-id: ${YANDEX_CLIENT_ID:}
-            client-secret: ${YANDEX_CLIENT_SECRET}
-            authorization-grant-type: authorization_code
-            redirect-uri: ${YANDEX_CLIENT_REDIRECT_URL:https://fsy.app/login}
-#            scope: login:email login:info
-            client-name: Yandex
-        provider:
-          yandex:
-            authorization-uri: https://oauth.yandex.ru/authorize
-            token-uri: https://oauth.yandex.ru/token
 
 server:
   port: ${SERVER_PORT:8080}

@@ -65,9 +65,8 @@ class S3FileStorageProxyService(
                     .toCompletableFuture()
             ).awaitSingle()
     }
-	
+
 	suspend fun headObjectMetadata(fileId: UUID): Map<String, String> =
-	kotlinx.coroutines.reactor.awaitSingle(
 		Mono.fromFuture(
 			s3Client.headObject(
 				HeadObjectRequest.builder()
@@ -80,8 +79,7 @@ class S3FileStorageProxyService(
 			response.contentType()?.let { map["Content-Type"] = it }
 			response.metadata()?.forEach { (k,v) -> map[k] = v }
 			map
-		}
-	)
+		}.awaitSingle()
 
 	suspend fun getContentType(fileId: UUID): String? {
 		val md = headObjectMetadata(fileId)
