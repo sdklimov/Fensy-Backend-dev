@@ -16,6 +16,7 @@ import ru.fensy.dev.repository.RefreshTokenRepository
 class JwtService(
     private val issuer: String,
     private val ttl: Duration,
+    private val refreshTokenTtl: Duration,
     private val jwtEncoder: JwtEncoder,
     private val jwtDecoder: JwtDecoder,
     private val refreshTokenRepository: RefreshTokenRepository,
@@ -38,7 +39,7 @@ class JwtService(
             userId = user.id!!,
             tokenHash = refreshToken.sha256(),
             jwtId = jti,
-            expiresAt = ttl.plus(REFRESH_TOKEN_DURATION)
+            expiresAt = refreshTokenTtl
         )
 
         return GenerateTokenOperationRs(jwt = jwt, refresh = refreshToken)
@@ -50,7 +51,6 @@ class JwtService(
 
     companion object {
         private const val BEARER_SUBSTRING_INDEX = "Bearer".length + 1
-        private val REFRESH_TOKEN_DURATION = Duration.ofMinutes(2)
     }
 }
 

@@ -2,11 +2,11 @@ package ru.fensy.dev.configuration.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.web.cors.CorsConfiguration
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebFluxSecurity
@@ -15,7 +15,20 @@ class SecurityConfiguration {
     @Bean
     fun configure(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
-            .cors { it.disable() }
+            .cors { it.configurationSource{
+                val corsConfiguration = CorsConfiguration()
+                corsConfiguration.setAllowedOriginPatterns(
+                    listOf(
+                        "http://localhost:*",
+                        //TODO добавить фронтенд домен
+                    )
+                )
+                corsConfiguration.allowedMethods =
+                    listOf("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                corsConfiguration.allowedHeaders = listOf("*")
+                corsConfiguration.allowCredentials = true
+                corsConfiguration
+            } }
             .csrf {it.disable()}
             .formLogin { it.disable() }
             .logout { it.disable() }

@@ -10,7 +10,7 @@ class ProcessPaymentsScheduler(
 ) {
 
     // todo: Вынести fixedRate в ENV
-    @Scheduled(fixedRate = 3000)
+//    @Scheduled(fixedRate = 3000)
     suspend fun execute() {
         processPaymentService.execute()
     }

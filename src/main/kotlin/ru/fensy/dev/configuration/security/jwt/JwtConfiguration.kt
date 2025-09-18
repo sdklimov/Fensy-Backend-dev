@@ -46,6 +46,7 @@ class JwtConfiguration(
     ): JwtService = JwtService(
         issuer = appName,
         ttl = properties.ttl,
+        refreshTokenTtl = properties.refreshTokenTtl,
         jwtEncoder = jwtEncoder,
         jwtDecoder = jwtDecoder,
         refreshTokenRepository = refreshTokenRepository

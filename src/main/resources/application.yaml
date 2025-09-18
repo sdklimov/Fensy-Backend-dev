@@ -62,7 +62,8 @@ spring:
     jwt:
       private-key: file:${JWT_PRIVATE_KEY_PATH}
       public-key: file:${JWT_PUBLIC_KEY_PATH}
-      ttl: 15m
+      ttl: ${JWT_TTL:15m}
+      refresh-token-ttl: ${JWT_REFRESH_TTL:7d}
     oauth2:
       user-info-uri:
         yandex: ${YANDEX_USER_INFO_URI:https://login.yandex.ru/info}

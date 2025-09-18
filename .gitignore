@@ -9,6 +9,7 @@ cacerts/
 !**/src/test/**/build/
 
 tonlibjson-linux-x86_64.so
+global-config.json
 
 ### STS ###
 .apt_generated

@@ -9,5 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class JwtConfigurationProperties(
     val privateKey: RSAPrivateKey,
     val publicKey: RSAPublicKey,
-    val ttl: Duration
+    val ttl: Duration,
+    val refreshTokenTtl: Duration
 )
