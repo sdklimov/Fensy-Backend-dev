@@ -7,10 +7,7 @@ import ru.fensy.dev.domain.Language
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.domain.UserSettings
-import ru.fensy.dev.repository.CountriesRepository
-import ru.fensy.dev.repository.LanguagesRepository
-import ru.fensy.dev.repository.PostRepository
-import ru.fensy.dev.repository.UserSettingsRepository
+import ru.fensy.dev.repository.*
 
 @FieldResolver
 class UserFieldResolver(
@@ -18,11 +15,17 @@ class UserFieldResolver(
     private val userSettingsRepository: UserSettingsRepository,
     private val countryRepository: CountriesRepository,
     private val languagesRepository: LanguagesRepository,
+    private val fileRepository: FileRepository
 ) {
 
     @SchemaMapping(typeName = "User", field = "posts")
     suspend fun posts(user: User): List<Post> {
         return postRepository.findByAuthorId(user.id!!)
+    }
+
+    @SchemaMapping(typeName = "User", field = "avatar")
+    suspend fun avatar(user: User): String {
+        return "http://localhost:8080/api/v1/files/${fileRepository.findById(user.avatar!!)?.id}"
     }
 
     @SchemaMapping(typeName = "User", field = "settings")

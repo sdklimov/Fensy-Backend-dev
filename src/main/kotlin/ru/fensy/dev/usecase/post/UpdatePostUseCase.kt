@@ -9,15 +9,9 @@ import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.Tag
 import ru.fensy.dev.exception.PostNotFoundException
-import ru.fensy.dev.file.FilePersister
 import ru.fensy.dev.graphql.controller.post.input.UpdatePostInput
 import ru.fensy.dev.graphql.controller.post.response.PostResponse
-import ru.fensy.dev.repository.CollectionRepository
-import ru.fensy.dev.repository.InterestsRepository
-import ru.fensy.dev.repository.ParsedLinkRepository
-import ru.fensy.dev.repository.PostAttachmentRepository
-import ru.fensy.dev.repository.PostRepository
-import ru.fensy.dev.repository.TagsRepository
+import ru.fensy.dev.repository.*
 import ru.fensy.dev.repository.querydata.CreateParsedLinkQueryData
 import ru.fensy.dev.repository.querydata.UpdatePostQueryData
 import ru.fensy.dev.service.FileMimeTypeValidateService
@@ -37,7 +31,6 @@ class UpdatePostUseCase(
     private val tagsRepository: TagsRepository,
     private val parsedLinkRepository: ParsedLinkRepository,
     private val collectionRepository: CollectionRepository,
-    private val filePersister: FilePersister,
     private val postAttachmentRepository: PostAttachmentRepository,
 ) {
 
@@ -156,7 +149,8 @@ class UpdatePostUseCase(
     }
 
     private suspend fun processCollections(currentPost: Post, input: UpdatePostInput) {
-        val currentPostCollections = collectionRepository.findAttachedCollectionsByPostId(currentPost.id).map { it.id }.toHashSet()
+        val currentPostCollections =
+            collectionRepository.findAttachedCollectionsByPostId(currentPost.id).map { it.id }.toHashSet()
         val deleted = currentPostCollections.filter { !input.collectionIds.contains(it) }
         collectionRepository.deleteFromPost(currentPost.id, deleted)
         val new = input.collectionIds.filter { !currentPostCollections.contains(it) }

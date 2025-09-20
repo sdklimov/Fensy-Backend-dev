@@ -9,18 +9,17 @@ import org.springframework.web.server.ServerWebExchange
 import ru.fensy.dev.usecase.file.DownloadFileUseCase
 
 @RestController
-@RequestMapping(path = ["/api/v1/posts/{postId}/files/{fileId}"])
+@RequestMapping(path = ["/api/v1"])
 class DownloadFileController(
     private val downloadFileUseCase: DownloadFileUseCase,
 ) {
 
-    @GetMapping
+    @GetMapping("/files/{fileId}")
     suspend fun downloadFile(
-        @PathVariable("postId") postId: Long,
         @PathVariable("fileId") fileId: UUID,
         serverWebExchange: ServerWebExchange,
     ) {
-        downloadFileUseCase.execute(postId, fileId, serverWebExchange)
+        downloadFileUseCase.execute(fileId, serverWebExchange)
     }
 
 }

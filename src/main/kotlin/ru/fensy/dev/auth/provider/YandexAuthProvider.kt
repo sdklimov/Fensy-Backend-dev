@@ -8,10 +8,7 @@ import org.springframework.stereotype.Component
 import ru.fensy.dev.auth.domain.AuthResult
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.domain.UserRole
-import ru.fensy.dev.repository.CountriesRepository
-import ru.fensy.dev.repository.LanguagesRepository
-import ru.fensy.dev.repository.UserRepository
-import ru.fensy.dev.repository.UserSettingsRepository
+import ru.fensy.dev.repository.*
 import ru.fensy.dev.service.YandexUserInfoProxyService
 import ru.fensy.dev.service.avatar.DefaultAvatarService
 
@@ -48,14 +45,12 @@ class YandexAuthProvider(
         val countryId = async {countriesRepository.getByCode("ru").id }
         val langId = async {  languagesRepository.getByCode("ru").id }
 
-        val avatar = Base64.getEncoder().encodeToString(defaultAvatarService.getRandomAvatar())
-
         val user = User(
             isVerified = false,
             fullName = userInfo["real_name"] as? String ?: (userInfo["display_name"] as? String),
             username = userInfo["login"] as String,
             email = (userInfo["emails"] as List<String>).first(),
-            avatar = avatar,
+            avatar = defaultAvatarService.getRandomAvatar().id,
             bio = null,
             location = null,
             role = UserRole.USER,
@@ -73,7 +68,9 @@ class YandexAuthProvider(
         )
         val created = userRepository.create(user)
         userSettingsRepository.create(created)
-        return@coroutineScope CreateUserOperationResult(isCreated = true, user = created)
+        return@coroutineScope CreateUserOperationResult(
+            isCreated = true, user = created
+        )
     }
 
 

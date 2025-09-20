@@ -29,11 +29,12 @@ class UploadFileUseCase(
         fileUploadSessionRepository.getActiveSessionByIdAndUserId(sessionId, currentUser(required = true)!!.id!!)
             ?: throw FileUploadSessionNotExistsException("Сессия не обнаружена")
 
-        val fileId = s3FileStorageProxyService.uploadFile(contentType, contentLength, file, fileName)
+        val s3Key = UUID.randomUUID()
+        s3FileStorageProxyService.uploadFile(contentType, contentLength, file, fileName, s3Key.toString())
 
-        fileUploadSessionRepository.addFileToSession(sessionId, fileId)
+        fileUploadSessionRepository.addFileToSession(sessionId, s3Key)
 
-        return@coroutineScope UploadFileResponse(fileId)
+        return@coroutineScope UploadFileResponse(s3Key)
     }
 
 }

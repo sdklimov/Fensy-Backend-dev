@@ -28,6 +28,7 @@ class S3ClientConfiguration(
             )
             .region(Region.of(properties.region))
             .endpointOverride(URI.create(properties.endpoint))
+            .forcePathStyle(true)
             .credentialsProvider(
                 StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(

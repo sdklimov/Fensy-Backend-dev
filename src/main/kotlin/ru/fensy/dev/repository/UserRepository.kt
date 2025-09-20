@@ -10,6 +10,7 @@ import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Component
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.domain.UserRole
+import java.util.UUID
 
 @Component
 class UserRepository(
@@ -109,7 +110,7 @@ class UserRepository(
             .bind("fullName", user.fullName)
             .bind("username", user.username)
             .bind("email", user.email)
-            .bind("avatar", Base64.getDecoder().decode(user.avatar))
+            .bind("avatar", user.avatar)
             .bind("bio", user.bio)
             .bind("location", user.location)
             .bind("role", user.role.name)
@@ -130,21 +131,13 @@ class UserRepository(
     private fun of(source: Map<String, Any>) =
         source.let {
 
-
-            val avatar = (it["avatar"] as? ByteBuffer)
-                ?.let { bf ->
-                    val byteArray = ByteArray(bf.capacity())
-                    bf.get(byteArray)
-                    Base64.getEncoder().encodeToString(byteArray)
-                }
-
             User(
                 id = it["id"] as Long,
                 isVerified = it["is_verified"] as Boolean,
                 fullName = it["full_name"] as? String,
                 username = it["username"] as String,
                 email = it["email"] as? String,
-                avatar = avatar,
+                avatar = it["avatar"] as? UUID,
                 bio = it["bio"] as? String,
                 location = it["location"] as? String,
                 role = UserRole.valueOf(it["role"] as String),

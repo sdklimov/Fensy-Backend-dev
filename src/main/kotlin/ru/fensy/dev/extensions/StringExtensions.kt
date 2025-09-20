@@ -1,4 +1,4 @@
-package ru.fensy.dev.extension
+package ru.fensy.dev.extensions
 
 import java.security.MessageDigest
 
@@ -8,3 +8,5 @@ fun String.sha256(): String {
     val digest = md.digest(bytes)
     return digest.fold("") { str, it -> str + "%02x".format(it) }
 }
+
+fun String.toLikeQuery(): String = "%$this%"

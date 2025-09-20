@@ -31,6 +31,8 @@ application:
   content-moderation:
     openai:
       key: ${OPENAI_KEY_SECRET:}
+  avatar:
+    default-avatar-s3keys: ${DEFAULT_AVATAR_S3KEYS}
   ton:
     wallet:
       mnemonics: ${TON_WALLET_MNEMONICS:}

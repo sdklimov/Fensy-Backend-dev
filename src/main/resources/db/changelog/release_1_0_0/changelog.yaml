@@ -1,6 +1,7 @@
 databaseChangeLog:
   - include: { relativeToChangelogFile: true, file: create-countries-table.sql }
   - include: { relativeToChangelogFile: true, file: create-languages-table.sql }
+  - include: { relativeToChangelogFile: true, file: create-files-table.sql }
   - include: { relativeToChangelogFile: true, file: create-user-table.sql }
   - include: { relativeToChangelogFile: true, file: create-user-settings-table.sql }
   - include: { relativeToChangelogFile: true, file: create-interests-table.sql }

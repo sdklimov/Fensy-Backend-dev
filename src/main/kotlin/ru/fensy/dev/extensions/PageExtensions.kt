@@ -1,4 +1,4 @@
-package ru.fensy.dev
+package ru.fensy.dev.extensions
 
 import graphql.schema.DataFetchingEnvironment
 

@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import ru.fensy.dev.extensions.Extensions.toLikeQuery
+import ru.fensy.dev.extensions.toLikeQuery
 import ru.fensy.dev.graphql.controller.post.response.SearchPostsResponse
 import ru.fensy.dev.repository.PostRepository
 

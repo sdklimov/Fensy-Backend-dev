@@ -1,6 +1,7 @@
 package ru.fensy.dev.domain
 
 import java.time.OffsetDateTime
+import java.util.UUID
 
 /**
  * Пользователь
@@ -11,7 +12,7 @@ data class User(
     val fullName: String? = null,
     val username: String,
     val email: String? = null,
-    val avatar: String? = null,
+    val avatar: UUID? = null,
     val bio: String? = null,
     val location: String? = null,
     val role: UserRole,

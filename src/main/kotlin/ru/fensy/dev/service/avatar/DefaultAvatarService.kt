@@ -1,43 +1,83 @@
 package ru.fensy.dev.service.avatar
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
-import java.util.zip.ZipInputStream
-import org.springframework.core.io.ClassPathResource
+import kotlinx.coroutines.runBlocking
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.event.ApplicationReadyEvent
+import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
+import ru.fensy.dev.domain.File
+import ru.fensy.dev.domain.FileContextType
+import ru.fensy.dev.repository.FileRepository
+import java.time.OffsetDateTime
+import java.util.*
 
 /**
  * Сервис стандартных аватаров
  */
 @Service
-class DefaultAvatarService {
+class DefaultAvatarService(
+    @Value("\${application.avatar.default-avatar-s3keys}")
+    private val defaultAvatarsS3Keys: Set<String>,
+    private val fileRepository: FileRepository
+) {
 
-    private val defaultAvatars: MutableSet<ByteArray> = mutableSetOf()
+    private val logger = KotlinLogging.logger {}
+    private var defaultAvatarIds: List<UUID> = emptyList()
 
     /**
-     * Вычитывает архив с аватарками и сохраняет его в памяти.
+     * Инициализация дефолтных аватарок при запуске приложения
      */
-    @PostConstruct
-    fun init() {
-        val resource = ClassPathResource(AVATAR_PATH)
-        val zipInputStream = ZipInputStream(resource.inputStream)
+    @EventListener(ApplicationReadyEvent::class)
+    fun initDefaultAvatars() {
+        runBlocking {
+            logger.info { "Инициализация дефолтных аватарок. Всего ключей: ${defaultAvatarsS3Keys.size}" }
 
-        zipInputStream.use { zip ->
-            var entry = zip.nextEntry
-            while (entry != null) {
-                val img = zip.readBytes()
-                defaultAvatars.add(img)
-                entry = zip.nextEntry
+            val avatarIds = mutableListOf<UUID>()
+
+            for (s3Key in defaultAvatarsS3Keys) {
+                val existingFile = fileRepository.findByS3Key(s3Key)
+
+                if (existingFile != null) {
+                    logger.debug { "Файл с ключом $s3Key уже существует, используем ID: ${existingFile.id}" }
+                    existingFile.id?.let { avatarIds.add(it) }
+                } else {
+                    val newFile = fileRepository.create(
+                        File(
+                            id = UUID.randomUUID(),
+                            s3Key = s3Key,
+                            contextType = FileContextType.AVATAR,
+                            contextId = null,
+                            createdAt = OffsetDateTime.now(),
+                            updatedAt = OffsetDateTime.now()
+                        )
+                    )
+                    newFile.id?.let { avatarIds.add(it) }
+                }
             }
+
+            defaultAvatarIds = avatarIds
+            logger.info { "Инициализация дефолтных аватарок завершена. Доступно ${defaultAvatarIds.size} аватарок" }
         }
     }
 
     /**
      * Получить случайную аватарку из дефолтных
      */
-    fun getRandomAvatar() = defaultAvatars.random()
+    suspend fun getRandomAvatar(): File {
+        // Если список пустой (например, при ошибке инициализации), загружаем заново
+        if (defaultAvatarIds.isEmpty()) {
+            defaultAvatarIds = fileRepository.findAllByContextType(FileContextType.AVATAR)
+                .mapNotNull { it.id }
+        }
 
-    companion object {
-        private const val AVATAR_PATH = "avatars/iloveimg-compressed.zip"
+        if (defaultAvatarIds.isEmpty()) {
+            throw IllegalStateException("Нет доступных дефолтных аватарок")
+        }
+
+        val randomId = defaultAvatarIds.random()
+        return fileRepository.findById(randomId)
+            ?: throw IllegalStateException("Файл с ID $randomId не найден")
     }
-
 }

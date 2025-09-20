@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters
 import ru.fensy.dev.constants.Constants.JTI_CLAIM_NAME
 import ru.fensy.dev.domain.User
-import ru.fensy.dev.extension.sha256
+import ru.fensy.dev.extensions.sha256
 import ru.fensy.dev.repository.RefreshTokenRepository
 
 class JwtService(

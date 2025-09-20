@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import ru.fensy.dev.domain.PageRequest
 import ru.fensy.dev.graphql.controller.post.response.PostsResponse
-import ru.fensy.dev.pageNumber
-import ru.fensy.dev.pageSize
+import ru.fensy.dev.extensions.pageNumber
+import ru.fensy.dev.extensions.pageSize
 import ru.fensy.dev.properties.PostProperties
 import ru.fensy.dev.repository.FeedRepository
 import ru.fensy.dev.usecase.BaseUseCase
