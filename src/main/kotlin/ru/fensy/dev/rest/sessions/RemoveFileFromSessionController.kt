@@ -15,13 +15,14 @@ class RemoveFileFromSessionController(
         @PathVariable("sessionId") sessionId: UUID,
         @PathVariable("fileId") fileId: UUID
     ): UploadFileResponse {
-        return uploadFileToSessionUseCase.execute(
-            sessionId = sessionId,
-            contentType = contentType,
-            contentLength = contentLength,
-            file = fileBody,
-            fileName = fileName,
-        )
+        return UploadFileResponse(fileId)
+//        return uploadFileToSessionUseCase.execute(
+//            sessionId = sessionId,
+//            contentType = contentType,
+//            contentLength = contentLength,
+//            file = fileBody,
+//            fileName = fileName,
+//        )
     }
 
 }
