@@ -1,17 +1,15 @@
 package ru.fensy.dev.rest
 
-import java.util.UUID
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.parameters.RequestBody
 import org.springframework.http.codec.multipart.FilePart
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
 import ru.fensy.dev.constants.Constants.X_FILE_CONTENT_LENGTH_HEADER_NAME
 import ru.fensy.dev.constants.Constants.X_FILE_CONTENT_TYPE_HEADER_NAME
 import ru.fensy.dev.constants.Constants.X_FILE_NAME_HEADER_NAME
 import ru.fensy.dev.usecase.file.UploadFileUseCase
+import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api/v1/sessions/{sessionId}/files"])
@@ -19,7 +17,12 @@ class UploadFileController(
     private val uploadFileUseCase: UploadFileUseCase,
 ) {
 
-    @PostMapping
+    @PostMapping(consumes = ["multipart/form-data"])
+    @RequestBody(
+        content = [Content(
+            mediaType = "multipart/form-data",
+        )]
+    )
     suspend fun uploadFile(
         @PathVariable("sessionId") sessionId: UUID,
         @RequestHeader(X_FILE_CONTENT_TYPE_HEADER_NAME, required = true) contentType: String,

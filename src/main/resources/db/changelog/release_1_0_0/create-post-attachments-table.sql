@@ -7,7 +7,7 @@ create table post_attachments
 (
     id         bigserial primary key,
     post_id    bigint not null references posts (id) on update cascade on delete cascade,
-    file_id    uuid unique
+    file_id    uuid references files (id)
 );
 
 comment on table post_attachments is 'Вложенные файлы к постам';

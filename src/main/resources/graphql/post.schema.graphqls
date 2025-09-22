@@ -12,7 +12,9 @@ enum PostAllowViewingFor {
 type PostAttachment {
     id: ID!
     postId: ID!
-    fileId: String!
+    url: String!
+    mimeType: String!
+    originalFilename: String!
 }
 
 type PostReaction {
@@ -82,7 +84,6 @@ input CreatedPost {
     pinned: Boolean
     fileSessionId: String
     tags: [String]
-    attachments: [String]
     parsedLinks: [CreatedParsedLink]
     interestIds: [ID!]!
     collectionIds: [ID]

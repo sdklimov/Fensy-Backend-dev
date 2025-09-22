@@ -11,7 +11,6 @@ data class CreatePostOperationRq(
     val allowViewingFor: AllowViewingFor,
     val pinned: Boolean = false,
     val tags: List<String> = emptyList(),
-    val attachments: List<UUID>? = emptyList(),
     val fileSessionId: UUID?,
     val parsedLinks: List<CreatedParsedLink>? = emptyList(),
     val interestIds: List<Long>,

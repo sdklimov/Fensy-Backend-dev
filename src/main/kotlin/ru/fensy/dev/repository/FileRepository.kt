@@ -6,7 +6,6 @@ import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.r2dbc.core.bind
 import org.springframework.stereotype.Repository
 import ru.fensy.dev.domain.File
-import ru.fensy.dev.domain.FileContextType
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -28,49 +27,42 @@ class FileRepository(
         return databaseClient
             .sql(
                 """
-                INSERT INTO files (id, s3_key, context_id, context_type)
-                VALUES (:id, :s3Key, :contextId, :contextType)
+                INSERT INTO files (id, storage_key, original_filename, mime_type, size_bytes, created_at, updated_at)
+                VALUES (:id, :storageKey, :originalFilename, :mimeType, :sizeBytes, :createdAt, :updatedAt)
                 RETURNING *
             """.trimIndent()
             )
             .bind("id", file.id)
-            .bind("s3Key", file.s3Key)
-            .bind("contextId", file.contextId)
-            .bind("contextType", file.contextType.name)
+            .bind("originalFilename", file.originalFileName)
+            .bind("storageKey", file.storageKey)
+            .bind("mimeType", file.mimeType)
+            .bind("sizeBytes", file.sizeBytes)
+            .bind("createdAt", file.createdAt)
+            .bind("updatedAt", file.updatedAt)
             .fetch()
             .one()
             .map { of(it) }
             .awaitSingle()
     }
 
-    suspend fun findByS3Key(s3Key: String): File? {
+    suspend fun findByStorageKey(storageKey: String): File? {
         return databaseClient
-            .sql("SELECT * FROM files WHERE s3_key = :s3Key")
-            .bind("s3Key", s3Key)
+            .sql("SELECT * FROM files WHERE storage_key = :storageKey")
+            .bind("storageKey", storageKey)
             .fetch()
             .one()
             .map { of(it) }
             .awaitSingleOrNull()
     }
 
-    suspend fun findAllByContextType(contextType: FileContextType): List<File> {
-        return databaseClient
-            .sql("SELECT * FROM files WHERE context_type = :contextType")
-            .bind("contextType", contextType.name)
-            .fetch()
-            .all()
-            .map { of(it) }
-            .collectList()
-            .awaitSingle()
-    }
-
     private fun of(source: Map<String, Any?>): File =
         source.let {
             File(
                 id = it["id"] as? UUID,
-                contextId = it["context_id"] as? String,
-                contextType = FileContextType.valueOf(it["context_type"] as String),
-                s3Key = it["s3_key"] as String,
+                storageKey = it["storage_key"] as String,
+                mimeType = it["mime_type"] as String,
+                sizeBytes = it["size_bytes"] as Long,
+                originalFileName = it["original_filename"] as String,
                 createdAt = it["created_at"] as OffsetDateTime,
                 updatedAt = it["updated_at"] as OffsetDateTime,
             )

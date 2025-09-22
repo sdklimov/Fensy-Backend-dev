@@ -5,9 +5,10 @@ import java.util.UUID
 
 data class File (
     val id: UUID? = null,
-    val s3Key: String,
-    val contextType: FileContextType,
-    val contextId: String?,
+    val originalFileName: String,
+    val storageKey: String,
+    val mimeType: String,
+    val sizeBytes: Long,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime,
 )

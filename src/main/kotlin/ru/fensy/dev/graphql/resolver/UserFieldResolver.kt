@@ -7,6 +7,7 @@ import ru.fensy.dev.domain.Language
 import ru.fensy.dev.domain.Post
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.domain.UserSettings
+import ru.fensy.dev.proxy.S3FileStorageProxyService
 import ru.fensy.dev.repository.*
 
 @FieldResolver
@@ -15,7 +16,8 @@ class UserFieldResolver(
     private val userSettingsRepository: UserSettingsRepository,
     private val countryRepository: CountriesRepository,
     private val languagesRepository: LanguagesRepository,
-    private val fileRepository: FileRepository
+    private val fileRepository: FileRepository,
+    private val s3FileStorageProxyService: S3FileStorageProxyService
 ) {
 
     @SchemaMapping(typeName = "User", field = "posts")
@@ -25,7 +27,11 @@ class UserFieldResolver(
 
     @SchemaMapping(typeName = "User", field = "avatar")
     suspend fun avatar(user: User): String {
-        return "http://localhost:8080/api/v1/files/${fileRepository.findById(user.avatar!!)?.id}"
+        user.avatar?.let {
+            val storageKey = fileRepository.findById(it)!!.storageKey
+            return s3FileStorageProxyService.generatePresignedUrl(storageKey)
+        }
+        return ""
     }
 
     @SchemaMapping(typeName = "User", field = "settings")

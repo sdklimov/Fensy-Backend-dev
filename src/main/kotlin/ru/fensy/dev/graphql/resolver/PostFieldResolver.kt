@@ -3,29 +3,11 @@ package ru.fensy.dev.graphql.resolver
 import graphql.schema.DataFetchingEnvironment
 import org.springframework.graphql.data.method.annotation.SchemaMapping
 import ru.fensy.dev.annotation.FieldResolver
+import ru.fensy.dev.domain.*
 import ru.fensy.dev.domain.Collection
-import ru.fensy.dev.domain.Comment
-import ru.fensy.dev.domain.Interest
-import ru.fensy.dev.domain.PageRequest
-import ru.fensy.dev.domain.ParsedLink
-import ru.fensy.dev.domain.Post
-import ru.fensy.dev.domain.PostAttachment
-import ru.fensy.dev.domain.PostReaction
-import ru.fensy.dev.domain.Tag
-import ru.fensy.dev.domain.User
-import ru.fensy.dev.graphql.controller.post.response.CommentResponse
 import ru.fensy.dev.properties.PostProperties
-import ru.fensy.dev.repository.CollectionRepository
-import ru.fensy.dev.repository.CommentsRepository
-import ru.fensy.dev.repository.InterestsRepository
-import ru.fensy.dev.repository.ParsedLinkRepository
-import ru.fensy.dev.repository.PostAttachmentsRepository
-import ru.fensy.dev.repository.PostLikeRepository
-import ru.fensy.dev.repository.PostReactionRepository
-import ru.fensy.dev.repository.PostRepository
-import ru.fensy.dev.repository.PostViewsRepository
-import ru.fensy.dev.repository.TagsRepository
-import ru.fensy.dev.repository.UserRepository
+import ru.fensy.dev.proxy.S3FileStorageProxyService
+import ru.fensy.dev.repository.*
 
 @FieldResolver
 class PostFieldResolver(
@@ -41,6 +23,8 @@ class PostFieldResolver(
     private val commentsRepository: CommentsRepository,
     private val postProperties: PostProperties,
     private val postReactionRepository: PostReactionRepository,
+    private val fileRepository: FileRepository,
+    private val s3FileStorageProxyService: S3FileStorageProxyService,
 ) {
 
     @SchemaMapping(typeName = "Post", field = "author")
@@ -80,8 +64,19 @@ class PostFieldResolver(
     }
 
     @SchemaMapping(typeName = "Post", field = "attachments")
-    suspend fun attachments(post: Post): List<PostAttachment> {
-        return postAttachmentsRepository.findByPostId(post.id)
+    suspend fun attachments(post: Post): List<PostAttachmentResponse> {
+        val postAttachment = postAttachmentsRepository.findByPostId(post.id)
+        return postAttachment.map {
+            val file = fileRepository.findById(it.fileId)!!
+
+            PostAttachmentResponse(
+                id = it.id,
+                postId = it.postId,
+                originalFilename = file.originalFileName,
+                mimeType = file.mimeType,
+                url = s3FileStorageProxyService.generatePresignedUrl(file.storageKey)
+            )
+        }
     }
 
     @SchemaMapping(typeName = "Post", field = "reposts")

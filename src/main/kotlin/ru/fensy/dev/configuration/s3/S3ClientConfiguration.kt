@@ -10,6 +10,8 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3AsyncClient
+import software.amazon.awssdk.services.s3.S3Configuration
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(S3ClientConfigurationProperties::class)
@@ -40,4 +42,23 @@ class S3ClientConfiguration(
             .build()
     }
 
+    @Bean
+    fun s3Presigner(): S3Presigner {
+        val s3Configuration = S3Configuration.builder()
+            .pathStyleAccessEnabled(true)
+            .build()
+        return S3Presigner.builder()
+            .serviceConfiguration(s3Configuration)
+            .region(Region.of(properties.region))
+            .endpointOverride(URI.create(properties.endpoint))
+            .credentialsProvider(
+                StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(
+                        properties.keyId,
+                        properties.keySecret
+                    )
+                )
+            )
+            .build()
+    }
 }

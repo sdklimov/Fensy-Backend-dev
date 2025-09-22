@@ -88,4 +88,4 @@ springdoc:
     default-models-expand-depth: 0
   pre-loading-enabled: true
   api-docs:
-    path: /v3/api-docs/user-profile
+    path: /v3/api-docs

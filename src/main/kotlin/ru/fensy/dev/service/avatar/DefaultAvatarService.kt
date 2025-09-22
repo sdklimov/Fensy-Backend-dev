@@ -1,14 +1,12 @@
 package ru.fensy.dev.service.avatar
 
 import io.github.oshai.kotlinlogging.KotlinLogging
-import jakarta.annotation.PostConstruct
 import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import ru.fensy.dev.domain.File
-import ru.fensy.dev.domain.FileContextType
 import ru.fensy.dev.repository.FileRepository
 import java.time.OffsetDateTime
 import java.util.*
@@ -36,22 +34,23 @@ class DefaultAvatarService(
 
             val avatarIds = mutableListOf<UUID>()
 
-            for (s3Key in defaultAvatarsS3Keys) {
-                val existingFile = fileRepository.findByS3Key(s3Key)
+            for (storageKey in defaultAvatarsS3Keys) {
+                val existingFile = fileRepository.findByStorageKey(storageKey)
 
                 if (existingFile != null) {
-                    logger.debug { "Файл с ключом $s3Key уже существует, используем ID: ${existingFile.id}" }
+                    logger.debug { "Файл с ключом $storageKey уже существует, используем ID: ${existingFile.id}" }
                     existingFile.id?.let { avatarIds.add(it) }
                 } else {
                     val newFile = fileRepository.create(
                         File(
                             id = UUID.randomUUID(),
-                            s3Key = s3Key,
-                            contextType = FileContextType.AVATAR,
-                            contextId = null,
+                            originalFileName = "default_avatar.png",
+                            storageKey = storageKey,
+                            mimeType = "image/png",
+                            sizeBytes = 0L, // Размер неизвестен на этапе инициализации
                             createdAt = OffsetDateTime.now(),
                             updatedAt = OffsetDateTime.now()
-                        )
+                        ) //TODO сделать получше
                     )
                     newFile.id?.let { avatarIds.add(it) }
                 }
@@ -66,12 +65,6 @@ class DefaultAvatarService(
      * Получить случайную аватарку из дефолтных
      */
     suspend fun getRandomAvatar(): File {
-        // Если список пустой (например, при ошибке инициализации), загружаем заново
-        if (defaultAvatarIds.isEmpty()) {
-            defaultAvatarIds = fileRepository.findAllByContextType(FileContextType.AVATAR)
-                .mapNotNull { it.id }
-        }
-
         if (defaultAvatarIds.isEmpty()) {
             throw IllegalStateException("Нет доступных дефолтных аватарок")
         }

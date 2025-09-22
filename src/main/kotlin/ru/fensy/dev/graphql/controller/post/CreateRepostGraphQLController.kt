@@ -20,7 +20,6 @@ class CreateRepostGraphQLController(
     ): PostResponse =
         createPostUseCase.execute(
             CreatePostOperationRq(
-                attachments = input.attachments,
                 originalPostId = input.originalPostId,
                 title = input.title,
                 content = input.content,

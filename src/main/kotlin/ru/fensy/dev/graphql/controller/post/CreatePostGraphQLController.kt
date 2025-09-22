@@ -29,7 +29,6 @@ class CreatePostGraphQLController(
                 interestIds = input.interestIds,
                 collectionIds = input.collectionIds,
                 fileSessionId = input.fileSessionId?.let { UUID.fromString(it) },
-                attachments = input.attachments?.map { UUID.fromString(it) },
             )
         )
 
