@@ -9,6 +9,7 @@ import org.ton.ton4j.smartcontract.wallet.v5.WalletV5
 import org.ton.ton4j.tonlib.Tonlib
 import org.ton.ton4j.tonlib.types.VerbosityLevel
 import org.ton.ton4j.utils.Utils
+import java.io.File
 
 
 @Configuration(proxyBeanMethods = false)
@@ -21,9 +22,18 @@ class TonWalletProxyConfiguration(
 //    private val apiKey: String,
 ) {
 
+    private fun getTonlibPath(): String {
+        val dockerPath = "/app/tonlibjson-linux-x86_64.so"
+        return if (File(dockerPath).exists()) {
+            dockerPath
+        } else {
+            Utils.getTonlibGithubUrl()
+        }
+    }
+
     @Bean
     fun tonLib(): Tonlib = Tonlib.builder()
-        .pathToTonlibSharedLib(Utils.getTonlibGithubUrl())
+        .pathToTonlibSharedLib(getTonlibPath())
         .pathToGlobalConfig(Utils.getGlobalConfigUrlMainnet())
         .testnet(false)
         .verbosityLevel(VerbosityLevel.DEBUG)
@@ -34,7 +44,7 @@ class TonWalletProxyConfiguration(
 
         val keyPair = TweetNaclFast.Signature.keyPair_fromSeed(Mnemonic.toSeed(mnemonics.split(",").map { it.trim() }))
         val tonlib = Tonlib.builder()
-            .pathToTonlibSharedLib(Utils.getTonlibGithubUrl())
+            .pathToTonlibSharedLib(getTonlibPath())
             .pathToGlobalConfig(Utils.getGlobalConfigUrlMainnet())
             .testnet(false)
             .verbosityLevel(VerbosityLevel.FATAL)
