@@ -30,6 +30,13 @@ jobs:
       - name: Build Spring Boot JAR
         run: ./gradlew bootJar
 
+      - name: List build artifacts
+        run: |
+          echo "Contents of build/libs/:"
+          ls -la build/libs/
+          echo "All jar files:"
+          find . -name "*.jar" -type f
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
