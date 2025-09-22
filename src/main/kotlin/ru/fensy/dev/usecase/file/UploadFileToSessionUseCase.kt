@@ -11,13 +11,13 @@ import ru.fensy.dev.exception.FileUploadSessionNotExistsException
 import ru.fensy.dev.proxy.S3FileStorageProxyService
 import ru.fensy.dev.repository.FileRepository
 import ru.fensy.dev.repository.FileUploadSessionRepository
-import ru.fensy.dev.rest.UploadFileResponse
+import ru.fensy.dev.rest.sessions.UploadFileResponse
 import ru.fensy.dev.usecase.BaseUseCase
 import java.time.OffsetDateTime
 
 @Component
 @Transactional
-class UploadFileUseCase(
+class UploadFileToSessionUseCase(
     private val s3FileStorageProxyService: S3FileStorageProxyService,
     private val fileUploadSessionRepository: FileUploadSessionRepository,
     private val fileRepository: FileRepository,

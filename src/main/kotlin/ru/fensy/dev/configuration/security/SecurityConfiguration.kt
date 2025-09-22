@@ -1,5 +1,6 @@
 package ru.fensy.dev.configuration.security
 
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
@@ -12,6 +13,9 @@ import org.springframework.web.cors.CorsConfiguration
 @EnableWebFluxSecurity
 class SecurityConfiguration {
 
+    @Value("\${application.frontend.url}")
+    private lateinit var frontendUrl: String
+
     @Bean
     fun configure(http: ServerHttpSecurity): SecurityWebFilterChain {
         return http
@@ -20,7 +24,7 @@ class SecurityConfiguration {
                 corsConfiguration.setAllowedOriginPatterns(
                     listOf(
                         "http://localhost:*",
-                        //TODO добавить фронтенд домен
+                        frontendUrl
                     )
                 )
                 corsConfiguration.allowedMethods =

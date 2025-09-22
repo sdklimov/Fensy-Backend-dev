@@ -1,4 +1,4 @@
-package ru.fensy.dev.rest
+package ru.fensy.dev.rest.sessions
 
 import java.util.UUID
 import org.springframework.web.bind.annotation.PostMapping

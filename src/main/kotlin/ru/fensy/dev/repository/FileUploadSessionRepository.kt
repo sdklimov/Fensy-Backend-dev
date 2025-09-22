@@ -95,6 +95,19 @@ class FileUploadSessionRepository(
         )
     }
 
+    suspend fun removeFileFromSession(sessionId: UUID, fileId: UUID): Long {
+        return databaseClient.sql(
+            """
+                delete from file_upload_session_to_file 
+                where session_id = :sessionId and file_id = :fileId
+            """.trimIndent()
+        )
+            .bind("sessionId", sessionId)
+            .bind("fileId", fileId)
+            .fetch()
+            .awaitRowsUpdated()
+    }
+
     companion object {
         private const val DEFAULT_SESSION_TTL_IN_MINUTES = 60 // todo: вынести в конфиг
     }

@@ -1,15 +1,7 @@
-FROM ubuntu:rolling
-
-# Установка OpenJDK 21 и зависимостей с очисткой кеша
-RUN apt update && apt install -y --no-install-recommends \
-    openjdk-21-jdk \
-    curl \
-    libstdc++6 \
-    libgcc-s1 \
-    && rm -rf /var/lib/apt/lists/*
-
-
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY build/libs/fensy-backend-dev.jar app.jar
-
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY build/libs/*.jar app.jar
+ENV APP_PORT=8080
+ENV SPRING_PROFILES_ACTIVE=prod
+EXPOSE ${APP_PORT}
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=${SPRING_PROFILES_ACTIVE}"]

@@ -1,4 +1,4 @@
-package ru.fensy.dev.rest
+package ru.fensy.dev.rest.sessions
 
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.parameters.RequestBody
@@ -8,13 +8,13 @@ import org.springframework.web.server.ServerWebExchange
 import ru.fensy.dev.constants.Constants.X_FILE_CONTENT_LENGTH_HEADER_NAME
 import ru.fensy.dev.constants.Constants.X_FILE_CONTENT_TYPE_HEADER_NAME
 import ru.fensy.dev.constants.Constants.X_FILE_NAME_HEADER_NAME
-import ru.fensy.dev.usecase.file.UploadFileUseCase
+import ru.fensy.dev.usecase.file.UploadFileToSessionUseCase
 import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api/v1/sessions/{sessionId}/files"])
 class UploadFileController(
-    private val uploadFileUseCase: UploadFileUseCase,
+    private val uploadFileToSessionUseCase: UploadFileToSessionUseCase,
 ) {
 
     @PostMapping(consumes = ["multipart/form-data"])
@@ -37,7 +37,7 @@ class UploadFileController(
             }
 
 
-        return uploadFileUseCase.execute(
+        return uploadFileToSessionUseCase.execute(
             sessionId = sessionId,
             contentType = contentType,
             contentLength = contentLength,

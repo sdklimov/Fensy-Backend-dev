@@ -1,4 +1,4 @@
-package ru.fensy.dev.service
+package ru.fensy.dev.proxy
 
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service

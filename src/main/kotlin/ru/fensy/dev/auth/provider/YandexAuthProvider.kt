@@ -1,7 +1,6 @@
 package ru.fensy.dev.auth.provider
 
 import java.time.OffsetDateTime
-import java.util.Base64
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Component
@@ -9,7 +8,7 @@ import ru.fensy.dev.auth.domain.AuthResult
 import ru.fensy.dev.domain.User
 import ru.fensy.dev.domain.UserRole
 import ru.fensy.dev.repository.*
-import ru.fensy.dev.service.YandexUserInfoProxyService
+import ru.fensy.dev.proxy.YandexUserInfoProxyService
 import ru.fensy.dev.service.avatar.DefaultAvatarService
 
 @Component
