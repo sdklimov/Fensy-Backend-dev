@@ -55,7 +55,6 @@ dependencies {
 
     // ton
 //    implementation("io.github.neodix42:smartcontract:1.0.0")
-    implementation("io.github.neodix42:ton4j:1.0.0")
     implementation("org.ton:ton-kotlin:0.2.18")
 
 //    implementation("org.ton:tonconnect-sdk:0.1.0")
