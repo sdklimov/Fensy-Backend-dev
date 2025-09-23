@@ -34,7 +34,7 @@ application:
   avatar:
     default-avatar-s3keys: ${DEFAULT_AVATAR_S3KEYS}
   frontend:
-    url: ${FRONTEND_URL:http://localhost:5173}
+    domain: ${FRONTEND_DOMAIN:localhost}
   ton:
     wallet:
       mnemonics: ${TON_WALLET_MNEMONICS:}

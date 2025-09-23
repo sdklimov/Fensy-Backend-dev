@@ -36,16 +36,17 @@ class RefreshTokenRepository(
             .awaitRowsUpdated()
     }
 
-    suspend fun getRefreshToken(userId: Long, jti: String, tokenHash: String): RefreshToken? {
+    suspend fun getRefreshToken(tokenHash: String): RefreshToken? {
         return databaseClient
             .sql(
                 """
                 select id, user_id, token_hash, jwt_id, expires_at, revoked
-                from refresh_tokens where user_id = :userId and jwt_id = :jti and token_hash = :tokenHash and expires_at > now()
+                from refresh_tokens
+                where token_hash = :tokenHash 
+                and expires_at > now()
+                and revoked = false
             """.trimIndent()
             )
-            .bind("userId", userId)
-            .bind("jti", jti)
             .bind("tokenHash", tokenHash)
             .fetch()
             .one()

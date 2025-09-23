@@ -16,7 +16,7 @@ import ru.fensy.dev.repository.RefreshTokenRepository
 class JwtService(
     private val issuer: String,
     private val ttl: Duration,
-    private val refreshTokenTtl: Duration,
+    val refreshTokenTtl: Duration,
     private val jwtEncoder: JwtEncoder,
     private val jwtDecoder: JwtDecoder,
     private val refreshTokenRepository: RefreshTokenRepository,

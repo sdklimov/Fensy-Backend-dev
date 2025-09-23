@@ -20,7 +20,7 @@ class LogoutUseCase(
     suspend fun execute(): BaseResponse {
         val user = currentUser(required = true)!!
         val jti = getJwtClaims()[JTI_CLAIM_NAME] as String
-        val exp =getJwtClaims()["exp"]
+        val exp = getJwtClaims()["exp"]
 
         val expiredAt = OffsetDateTime.ofInstant(exp as Instant, ZoneOffset.UTC)
         revokedTokensRepository.revoke(jti =jti, expiredAt = expiredAt, userId = user.id!!)

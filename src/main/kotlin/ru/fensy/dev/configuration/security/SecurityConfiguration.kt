@@ -13,8 +13,8 @@ import org.springframework.web.cors.CorsConfiguration
 @EnableWebFluxSecurity
 class SecurityConfiguration {
 
-    @Value("\${application.frontend.url}")
-    private lateinit var frontendUrl: String
+    @Value("\${application.frontend.domain}")
+    private lateinit var frontendDomain: String
 
     @Bean
     fun configure(http: ServerHttpSecurity): SecurityWebFilterChain {
@@ -24,7 +24,7 @@ class SecurityConfiguration {
                 corsConfiguration.setAllowedOriginPatterns(
                     listOf(
                         "http://localhost:*",
-                        frontendUrl
+                        "*.${frontendDomain}"
                     )
                 )
                 corsConfiguration.allowedMethods =
