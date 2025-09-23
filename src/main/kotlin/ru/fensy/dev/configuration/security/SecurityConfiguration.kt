@@ -24,7 +24,8 @@ class SecurityConfiguration {
                 corsConfiguration.setAllowedOriginPatterns(
                     listOf(
                         "http://localhost:*",
-                        "*.${frontendDomain}"
+                        "https://*.${frontendDomain}",
+                        "https://${frontendDomain}",
                     )
                 )
                 corsConfiguration.allowedMethods =
