@@ -2,13 +2,14 @@ package ru.fensy.dev.rest.sessions
 
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.parameters.RequestBody
+import kotlinx.coroutines.reactive.asFlow
 import org.springframework.http.codec.multipart.FilePart
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ServerWebExchange
 import ru.fensy.dev.constants.Constants.X_FILE_CONTENT_LENGTH_HEADER_NAME
 import ru.fensy.dev.constants.Constants.X_FILE_CONTENT_TYPE_HEADER_NAME
 import ru.fensy.dev.constants.Constants.X_FILE_NAME_HEADER_NAME
-import ru.fensy.dev.usecase.file.UploadFileToSessionUseCase
+import ru.fensy.dev.usecase.sessions.UploadFileToSessionUseCase
 import java.util.*
 
 @RestController
@@ -34,7 +35,7 @@ class UploadFileController(
             .multipartData
             .flatMapMany {
                 (it["file"]!!.first() as FilePart).content()
-            }
+            }.asFlow()
 
 
         return uploadFileToSessionUseCase.execute(

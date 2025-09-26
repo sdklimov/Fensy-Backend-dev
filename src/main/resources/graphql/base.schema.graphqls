@@ -1,0 +1,16 @@
+type ImageAsset {
+    url: String!
+    width: Int
+    height: Int
+    mimeType: String
+    originalFilename: String
+}
+
+type VideoAsset {
+    url: String!
+    width: Int
+    height: Int
+    mimeType: String
+    originalFilename: String
+    duration: Int
+}

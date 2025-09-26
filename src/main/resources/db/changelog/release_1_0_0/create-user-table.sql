@@ -10,7 +10,7 @@ create table users
     full_name     text,
     username      text unique,
     email         text unique,
-    avatar        uuid references files (id),
+    avatar        uuid,
     bio           text,
     location      text,
     role          text      not null default 'USER',

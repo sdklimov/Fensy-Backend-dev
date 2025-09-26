@@ -1,7 +1,7 @@
 package ru.fensy.dev.rest.sessions
 
 import org.springframework.web.bind.annotation.*
-import ru.fensy.dev.usecase.file.UploadFileToSessionUseCase
+import ru.fensy.dev.usecase.sessions.UploadFileToSessionUseCase
 import java.util.*
 
 @RestController

@@ -10,7 +10,6 @@ data class Post(
     val authorId: Long,
     val title: String?,
     val content: String,
-    val attachments: List<PostAttachmentResponse>? = null,
     val allowViewingFor: AllowViewingFor,
     val pinned: Boolean,
     val adultContent: Boolean = false,
@@ -42,11 +41,3 @@ data class Post(
 
 
 }
-
-data class PostAttachmentResponse(
-    val url: String,
-    val originalFilename: String,
-    val mimeType: String,
-    val postId: Long,
-    val id: Long,
-)

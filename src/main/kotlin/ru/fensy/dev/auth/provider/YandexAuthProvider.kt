@@ -49,7 +49,7 @@ class YandexAuthProvider(
             fullName = userInfo["real_name"] as? String ?: (userInfo["display_name"] as? String),
             username = userInfo["login"] as String,
             email = (userInfo["emails"] as List<String>).first(),
-            avatar = defaultAvatarService.getRandomAvatar().id,
+            avatar = defaultAvatarService.getRandomAvatar(),
             bio = null,
             location = null,
             role = UserRole.USER,

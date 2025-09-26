@@ -9,12 +9,22 @@ enum PostAllowViewingFor {
     DONORS
 }
 
+type VideoPostAttachment {
+    assetId: ID!
+    playback: VideoAsset!
+}
+
+type ImagePostAttachment {
+    assetId: ID!
+    thumbnail: ImageAsset!
+    medium: ImageAsset!
+    large: ImageAsset!
+}
+
 type PostAttachment {
-    id: ID!
     postId: ID!
-    url: String!
-    mimeType: String!
-    originalFilename: String!
+    video: [VideoPostAttachment]
+    image: [ImagePostAttachment]
 }
 
 type PostReaction {
@@ -38,7 +48,7 @@ type Post {
     originalPost: Post
     collections: [Collection]!
     attachedCollections: [Collection]!
-    attachments: [PostAttachment]!
+    attachments: PostAttachment!
     tags: [Tag]!
     parsedLinks: [ParsedLink]!
     interests: [Interest]!

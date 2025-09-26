@@ -6,7 +6,7 @@
 create table file_upload_session_to_file
 (
     session_id uuid references file_upload_session (id),
-    file_id    uuid references files (id),
+    file_id    uuid references media_assets (id),
     primary key (session_id, file_id)
 );
 

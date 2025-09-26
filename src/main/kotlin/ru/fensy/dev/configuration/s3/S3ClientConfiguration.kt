@@ -1,25 +1,25 @@
 package ru.fensy.dev.configuration.s3
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import io.awspring.cloud.autoconfigure.core.AwsProperties
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3AsyncClient
-import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import java.net.URI
 import java.time.Duration
 
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(S3ClientConfigurationProperties::class)
-class S3ClientConfiguration(
-    private val properties: S3ClientConfigurationProperties,
-) {
+class S3ClientConfiguration {
 
     @Bean
-    fun s3Client(): S3AsyncClient {
+    fun s3AsyncClient(
+        awsCredentialsProvider: AwsCredentialsProvider,
+        @Value("\${spring.cloud.aws.region.static}") region: String,
+        @Value("\${spring.cloud.aws.s3.endpoint}") endpoint: URI,
+    ): S3AsyncClient {
         return S3AsyncClient.builder()
             .httpClient(
                 NettyNioAsyncHttpClient.builder()
@@ -27,32 +27,9 @@ class S3ClientConfiguration(
                     .maxConcurrency(64)
                     .build()
             )
-            .region(Region.of(properties.region))
-            .endpointOverride(URI.create(properties.endpoint))
-            .credentialsProvider(
-                StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(
-                        properties.keyId,
-                        properties.keySecret
-                    )
-                )
-            )
-            .build()
-    }
-
-    @Bean
-    fun s3Presigner(): S3Presigner {
-        return S3Presigner.builder()
-            .region(Region.of(properties.region))
-            .endpointOverride(URI.create(properties.endpoint))
-            .credentialsProvider(
-                StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(
-                        properties.keyId,
-                        properties.keySecret
-                    )
-                )
-            )
+            .region(Region.of(region))
+            .endpointOverride(endpoint)
+            .credentialsProvider(awsCredentialsProvider)
             .build()
     }
 }

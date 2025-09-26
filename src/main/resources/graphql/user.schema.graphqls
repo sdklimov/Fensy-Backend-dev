@@ -3,13 +3,20 @@ enum UserRole {
     PRO
 }
 
+type AvatarVariants {
+    avatarAssetId: UUID!
+    thumbnail: ImageAsset
+    medium: ImageAsset
+    large: ImageAsset
+}
+
 type User {
     id: ID!
     isVerified: Boolean!
     fullName: String
     username: String!
     email: String
-    avatar: String
+    avatar: AvatarVariants
     bio: String
     location: String
     role: UserRole!

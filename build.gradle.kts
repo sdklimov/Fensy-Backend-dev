@@ -18,6 +18,8 @@ repositories {
     maven("https://jitpack.io")
 }
 
+val thumbnailatorVersion = "0.4.20"
+val ffmpegWrapperVersion = "0.8.0"
 dependencies {
 	implementation("com.graphql-java:graphql-java-extended-scalars:20.1")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -50,14 +52,19 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0")
 
     // aws
-    implementation("software.amazon.awssdk:aws-sdk-java:2.31.50")
-    implementation("software.amazon.awssdk:netty-nio-client:2.31.50")
+    implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1"))
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
+    implementation("software.amazon.awssdk:netty-nio-client")
 
     // ton
 //    implementation("io.github.neodix42:smartcontract:1.0.0")
     implementation("org.ton:ton-kotlin:0.2.18")
 
 //    implementation("org.ton:tonconnect-sdk:0.1.0")
+
+    // image and video compression
+    implementation("com.github.kokorin.jaffree:jaffree:2024.08.29")
+    implementation("net.coobird:thumbnailator:$thumbnailatorVersion")
 
     // test
     testImplementation("org.springframework.boot:spring-boot-starter-test")

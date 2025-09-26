@@ -4,7 +4,7 @@ import java.util.UUID
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import ru.fensy.dev.usecase.file.StartFileUploadSessionUseCase
+import ru.fensy.dev.usecase.sessions.StartFileUploadSessionUseCase
 
 @RestController
 @RequestMapping(path = ["/api/v1/files/sessions"])

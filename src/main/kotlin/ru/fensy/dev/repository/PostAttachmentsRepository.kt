@@ -1,10 +1,13 @@
 package ru.fensy.dev.repository
 
-import java.util.UUID
 import kotlinx.coroutines.reactor.awaitSingle
 import org.springframework.r2dbc.core.DatabaseClient
 import org.springframework.stereotype.Component
-import ru.fensy.dev.domain.PostAttachment
+import ru.fensy.dev.domain.MediaAssetType
+import ru.fensy.dev.graphql.responses.ImagePostAttachment
+import ru.fensy.dev.graphql.responses.PostAttachment
+import ru.fensy.dev.graphql.responses.VideoPostAttachment
+import java.util.UUID
 
 /**
  * Репозиторий post_attachments
@@ -14,26 +17,51 @@ class PostAttachmentsRepository(
     private val databaseClient: DatabaseClient,
 ) {
 
-    suspend fun findByPostId(postId: Long): List<PostAttachment> =
+    suspend fun findByPostIdVideosAssetType(postId: Long): List<VideoPostAttachment> =
         databaseClient
             .sql(
                 """
-                select * from post_attachments where post_id = :postId
+                select ma.* from post_attachments pa
+                join media_assets ma on ma.id = pa.file_id and post_id = :postId
+                where ma.asset_type = :assetType
             """.trimIndent()
             )
             .bind("postId", postId)
+            .bind("assetType", MediaAssetType.VIDEO.name)
             .fetch()
             .all()
-            .map { of(it) }
+            .map {
+                VideoPostAttachment(
+                    assetId = it["id"] as UUID,
+                    playback = null
+                )
+            }
             .collectList()
             .awaitSingle()
 
-    private fun of(source: Map<String, Any>) = source.let {
-        PostAttachment(
-            id = it["id"] as Long,
-            postId = it["post_id"] as Long,
-            fileId = it["file_id"] as UUID,
-        )
-    }
+    suspend fun findByPostIdImagesAssetType(postId: Long): List<ImagePostAttachment> =
+        databaseClient
+            .sql(
+                """
+                select ma.* from post_attachments pa
+                join media_assets ma on ma.id = pa.file_id and post_id = :postId
+                where ma.asset_type = :assetType
+            """.trimIndent()
+            )
+            .bind("postId", postId)
+            .bind("assetType", MediaAssetType.IMAGE.name)
+            .fetch()
+            .all()
+            .map {
+                ImagePostAttachment(
+                    assetId = it["id"] as UUID,
+                    thumbnail = null,
+                    medium = null,
+                    large = null
+                )
+            }
+            .collectList()
+            .awaitSingle()
+
 
 }

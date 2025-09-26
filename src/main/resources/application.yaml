@@ -24,25 +24,63 @@ application:
   file-storage:
     s3:
       bucket-name: ${S3_BUCKET_NAME:fansy-storage}
-      endpoint: ${S3_ENDPOINT:https://storage.yandexcloud.net}
-      region: ${S3_REGION:ru-central1}
-      key-id: ${S3_KEY_ID:}
-      key-secret: ${S3_KEY_SECRET:}
   content-moderation:
     openai:
       key: ${OPENAI_KEY_SECRET:}
   avatar:
-    default-avatar-s3keys: ${DEFAULT_AVATAR_S3KEYS}
+    default-avatar-media-asset-ids: ${DEFAULT_AVATAR_MEDIA_ASSET_IDS}
   frontend:
     domain: ${FRONTEND_DOMAIN:localhost}
   ton:
     wallet:
       mnemonics: ${TON_WALLET_MNEMONICS:}
-#    provider:
-#      url: ${TON_PROVIDER_URL:https://toncenter.com/api/v2/jsonRPC}
-#      api-key: ${TON_API_KEY:}
+  #    provider:
+  #      url: ${TON_PROVIDER_URL:https://toncenter.com/api/v2/jsonRPC}
+  #      api-key: ${TON_API_KEY:}
+  media:
+    compression:
+      image-post-attachment:
+        large:
+          width: ${IMAGE_POST_ATTACHMENT_LARGE_WIDTH:1920}
+          quality: ${IMAGE_POST_ATTACHMENT_LARGE_QUALITY:0.9}
+        medium:
+          width: ${IMAGE_POST_ATTACHMENT_MEDIUM_WIDTH:800}
+          quality: ${IMAGE_POST_ATTACHMENT_MEDIUM_QUALITY:0.8}
+        thumbnail:
+          width: ${IMAGE_POST_ATTACHMENT_SMALL_WIDTH:400}
+          quality: ${IMAGE_POST_ATTACHMENT_SMALL_QUALITY:0.7}
+      video-post-attachment:
+        playback_720p:
+          height: ${VIDEO_POST_ATTACHMENT_LARGE_WIDTH:720}
+          crf: ${VIDEO_POST_ATTACHMENT_LARGE_QUALITY:22}
+        loop:
+          width: ${VIDEO_POST_ATTACHMENT_MEDIUM_WIDTH:800}
+          crf: ${VIDEO_POST_ATTACHMENT_MEDIUM_QUALITY:32}
+        thumbnail:
+          width: ${VIDEO_POST_ATTACHMENT_SMALL_WIDTH:800}
+          quality: ${VIDEO_POST_ATTACHMENT_SMALL_QUALITY:0.8}
+      avatar:
+        large:
+          width: ${AVATAR_LARGE_WIDTH:500}
+          quality: ${AVATAR_LARGE_QUALITY:0.9}
+        medium:
+          width: ${AVATAR_MEDIUM_WIDTH:150}
+          quality: ${AVATAR_MEDIUM_QUALITY:0.8}
+        thumbnail:
+          width: ${AVATAR_SMALL_WIDTH:50}
+          quality: ${AVATAR_SMALL_QUALITY:0.7}
 
 spring:
+  cloud:
+    aws:
+      credentials:
+        access-key: ${S3_KEY_ID}
+        secret-key: ${S3_KEY_SECRET}
+      region:
+        static: ${S3_REGION}
+      s3:
+        endpoint: ${S3_ENDPOINT}
+        enabled: true
   graphql:
     graphiql:
       enabled: true

@@ -3,3 +3,4 @@ databaseChangeLog:
   - include: { relativeToChangelogFile: true, file: insert-languages-init-data.sql }
   - include: { relativeToChangelogFile: true, file: insert-interests-translation-data.sql }
   - include: { relativeToChangelogFile: true, file: insert-countries-init-data.sql }
+  - include: { relativeToChangelogFile: true, file: insert-default-avatars-init-data.sql }
